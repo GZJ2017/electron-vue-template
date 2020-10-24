@@ -15,7 +15,6 @@ function buildMain(){
 	return new Promise((resolve, reject)=>{
 		console.log("打包APP主进程");
 		let log = '';
-		require('del')(['./app/main.js']);
 		const mainCompiler = webpack(webpackMainConfig);
 		mainCompiler.run((err, stats)=>{
 			let errorInfo = '';

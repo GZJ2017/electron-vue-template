@@ -3,6 +3,7 @@
 	<ul>
 		<li>this is head</li>
 	</ul>
+	<img src="@/assets/images/tuite.png" alt="">
 	<img :src="imgUrl" alt="">
 	<div class="imgs"></div>
 </div>
@@ -11,7 +12,7 @@
 export default {
 	data(){
 		return {
-			imgUrl: require("@/assets/tuite.png")
+			imgUrl: require("@/assets/images/tuite.png")
 		}
 	}
 }

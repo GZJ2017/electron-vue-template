@@ -4,7 +4,7 @@ import Login from '@/views/login.vue';
 
 export default [{
 	path: '/',
-	redirect: '/home'
+	redirect: 'home'
 },{
 	name: 'home',
 	path: '/home',
