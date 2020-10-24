@@ -23,6 +23,18 @@ export default {
 	},
 	mounted(){
 		console.log(this.userInfo);
+		this.getData();
+	},
+	methods: {
+		async getData(){
+			let count = await this.getCount()
+			console.log(count);
+		},
+		getCount(){
+			return new Promise(resolve=>{
+				setTimeout(()=>resolve(666),100)
+			})
+		}
 	}
 }
 </script>

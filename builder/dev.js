@@ -79,7 +79,6 @@ function devRender(){
 		publicPath: webpackDevConfig.output.publicPath,
 		inline: true,
 		hot: true,
-		// open: true,
 		quiet: true,
 		progress: true,
 		setup(app){
