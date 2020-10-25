@@ -15,7 +15,7 @@ class App {
 		this.win = new this.BrowserWindow({
 			width: 1200,
 			height: 800,
-			// frame: false,
+			frame: false,
 			// titleBarStyle: 'hidden',
 			webPreferences:{
 				nodeIntegration: true // 在渲染进程引入node模块

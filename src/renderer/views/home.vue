@@ -23,7 +23,7 @@ export default {
 	},
 	mounted(){
 		console.log(this.userInfo);
-		this.getData();
+		// this.getData();
 	},
 	methods: {
 		async getData(){
