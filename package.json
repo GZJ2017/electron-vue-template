@@ -41,5 +41,50 @@
     "vue": "^2.6.12",
     "vue-router": "^3.4.7",
     "vuex": "^3.5.1"
+  },
+  "build": {
+    "asar": true,
+    "productName": "Electron+vue",
+    "appId": "com.electron.template",
+    "copyright": "Copyright © template",
+    "directories": {
+      "output": "pack"
+    },
+    "files": [
+      "app/**"
+    ],
+    "mac": {
+      "identity": "com.electron.template",
+      "target": ["dmg"],
+      "attifactName": "${productName}.${ext}",
+      "icon": "main/favicon/favicon.icons"
+    },
+    "dmg": {
+      "title": "${productName}",
+      "attifactName": "${productName}.${ext}",
+      "icon": "main/favicon/favicon.icons"
+    },
+    "win": {
+      "legalTrademarks": "Copyright © template",
+      "publisherName": "electron",
+      "requestedExecutionLevel": "highestAvailable",
+      "target": [{
+        "target": "nsis",
+        "arch": [
+          "ia32"
+        ]
+      }],
+      "artifactName": "${productName}.${ext}",
+      "icon": "main/favicon/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "allowElevation": true,
+      "artifactName": "${productName}-安装包-V${version}.${ext}",
+      "runAfterFinish": true,
+      "shortcutName": "Electron+vue+webpack-template"
+    }
   }
 }

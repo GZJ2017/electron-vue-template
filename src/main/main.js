@@ -2,25 +2,20 @@ const url = require("url");
 const path = require("path");
 const Shortcut = require('./shortcut');
 const electron = require('electron');
+const { mianWindow } = require('./createWindow');
+const RegisterEvent = require('./registerEvent');
+require("./libs/runCheck.js")();
 
 class App {
-	constructor({app, BrowserWindow}){
+	constructor({app}){
 		this.app = app;
-		this.BrowserWindow = BrowserWindow;
 
 		this.win = null;
 		this.eventHandle(this.app);
+		this.registerEvent();
 	}
 	createWindow(){
-		this.win = new this.BrowserWindow({
-			width: 1200,
-			height: 800,
-			frame: false,
-			// titleBarStyle: 'hidden',
-			webPreferences:{
-				nodeIntegration: true // 在渲染进程引入node模块
-			}
-		});
+		this.win = mianWindow();
 		this.win.loadURL("http://localhost:8090/");
 	}
 	eventHandle(app){
@@ -35,6 +30,9 @@ class App {
 	windowAllClosed(){
 		if(process.platform !== 'darwin') this.app.quit();
 	}
+	registerEvent(){
+		this.event = new RegisterEvent(this.win);
+	}
 	ready(){
 		this.createWindow();
 		new Shortcut(this.win);
@@ -44,4 +42,7 @@ class App {
 	}
 }
 
-new App(electron);
+let app = new App(electron);
+
+module.exports = app; 
+
