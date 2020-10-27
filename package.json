@@ -1,94 +1,96 @@
 {
-  "name": "electron-vue-template",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ./src/main/main.js",
-    "dev": "node ./builder/dev.js",
-    "build": "node ./builder/build.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/plugin-transform-runtime": "^7.12.1",
-    "@babel/preset-env": "^7.12.1",
-    "babel-loader": "^8.1.0",
-    "chalk": "^4.1.0",
-    "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^5.0.0",
-    "electron": "^10.1.4",
-    "html-webpack-plugin": "^4.5.0",
-    "mini-css-extract-plugin": "^1.1.2",
-    "node-loader": "^1.0.2",
-    "node-sass": "^4.14.1",
-    "sass-loader": "^10.0.4",
-    "style-loader": "^2.0.0",
-    "url-loader": "^4.1.1",
-    "vue-loader": "^15.9.3",
-    "vue-style-loader": "^4.1.2",
-    "vue-template-compiler": "^2.6.12",
-    "webpack": "^5.2.0",
-    "webpack-cli": "^4.1.0",
-    "webpack-dev-server": "^3.11.0",
-    "webpack-hot-middleware": "^2.25.0"
-  },
-  "dependencies": {
-    "axios": "^0.20.0",
-    "vue": "^2.6.12",
-    "vue-router": "^3.4.7",
-    "vuex": "^3.5.1"
-  },
-  "build": {
-    "asar": true,
-    "productName": "Electron+vue",
-    "appId": "com.electron.template",
-    "copyright": "Copyright © template",
-    "directories": {
-      "output": "pack"
+    "name": "electron-vue-template",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "electron ./src/main/main.js",
+        "dev": "node ./builder/dev.js",
+        "build": "node ./builder/build.js"
     },
-    "files": [
-      "app/**"
-    ],
-    "mac": {
-      "identity": "com.electron.template",
-      "target": [
-        "dmg"
-      ],
-      "attifactName": "${productName}.${ext}",
-      "icon": "main/favicon/favicon.icons"
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@babel/core": "^7.12.3",
+        "@babel/plugin-transform-runtime": "^7.12.1",
+        "@babel/preset-env": "^7.12.1",
+        "archiver": "^5.0.2",
+        "babel-loader": "^8.1.0",
+        "chalk": "^4.1.0",
+        "clean-webpack-plugin": "^3.0.0",
+        "css-loader": "^5.0.0",
+        "electron": "^10.1.4",
+        "electron-builder": "^22.9.1",
+        "html-webpack-plugin": "^4.5.0",
+        "mini-css-extract-plugin": "^1.1.2",
+        "node-loader": "^1.0.2",
+        "node-sass": "^4.14.1",
+        "sass-loader": "^10.0.4",
+        "style-loader": "^2.0.0",
+        "url-loader": "^4.1.1",
+        "vue-loader": "^15.9.3",
+        "vue-style-loader": "^4.1.2",
+        "vue-template-compiler": "^2.6.12",
+        "webpack": "^5.2.0",
+        "webpack-cli": "^4.1.0",
+        "webpack-dev-server": "^3.11.0",
+        "webpack-hot-middleware": "^2.25.0"
     },
-    "dmg": {
-      "title": "${productName}",
-      "attifactName": "${productName}.${ext}",
-      "icon": "main/favicon/favicon.icons"
+    "dependencies": {
+        "axios": "^0.20.0",
+        "vue": "^2.6.12",
+        "vue-router": "^3.4.7",
+        "vuex": "^3.5.1"
     },
-    "win": {
-      "legalTrademarks": "Copyright © template",
-      "publisherName": "electron",
-      "requestedExecutionLevel": "highestAvailable",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "ia32"
-          ]
+    "build": {
+        "asar": true,
+        "productName": "Electron+vue",
+        "appId": "com.electron.template",
+        "copyright": "Copyright © template",
+        "directories": {
+            "output": "pack"
+        },
+        "files": [
+            "app/**"
+        ],
+        "mac": {
+            "identity": "com.electron.template",
+            "target": [
+                "dmg"
+            ],
+            "artifactName": "${productName}.${ext}",
+            "icon": "main/favicon/favicon.icons"
+        },
+        "dmg": {
+            "title": "${productName}",
+            "artifactName": "${productName}.${ext}",
+            "icon": "main/favicon/favicon.icons"
+        },
+        "win": {
+            "legalTrademarks": "Copyright © template",
+            "publisherName": "electron",
+            "requestedExecutionLevel": "highestAvailable",
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "artifactName": "${productName}.${ext}",
+            "icon": "main/favicon/favicon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "perMachine": true,
+            "allowElevation": true,
+            "artifactName": "${productName}-安装包-V${version}.${ext}",
+            "runAfterFinish": true,
+            "shortcutName": "Electron+vue+webpack-template"
         }
-      ],
-      "artifactName": "${productName}.${ext}",
-      "icon": "main/favicon/favicon.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "perMachine": true,
-      "allowElevation": true,
-      "artifactName": "${productName}-安装包-V${version}.${ext}",
-      "runAfterFinish": true,
-      "shortcutName": "Electron+vue+webpack-template"
     }
-  }
 }

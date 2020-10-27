@@ -3,6 +3,7 @@ process.env.NODE_ENV = 'production';
 const chalk = require('chalk');
 const del = require('del');
 const webpack = require('webpack');
+const path = require('path');
 const fs = require('fs');
 const renderConfig = require("./webpack.render.config.js");
 
@@ -55,7 +56,7 @@ const build = {
 		// const context = require('../src/renderer/libs')
 	},
 	buildApp(){
-		viewBuilder().then(resolve=>{
+		Promise.all([viewBuilder()]).then(resolve=>{
 			// renderConfig
 			resolve.forEach(res=> console.log('打包输出===>', res));
 
@@ -66,9 +67,9 @@ const build = {
 			} catch(e){
 				console.log(e);
 			}
-
-			let zipPath = renderConfig.outpath.path;
+			let zipPath = renderConfig.output.path;
 			let fileName = this.setup.versionType+ '-' + this.setup.version.join('.');
+			let filePath = path.join(zipPath, `../pack/${fileName}.zip`);
 			this.compress(zipPath, filePath, 7, (type, msg)=>{
 				if(type === 'error'){
 					Promise.reject('压缩文件出错：'+ msg);
@@ -83,12 +84,12 @@ const build = {
 		})
 	},
 	packMainAndUpdate(){
-		mainBuild().then(resolve=>{
+		Promise.all([mainBuild()]).then(resolve=>{
 			const electronBuilder = require('electron-builder');
 			const packageJson = require('../package.json');
 			resolve.forEach(res => console.log('打包输出===>', res));
 
-			packageJson.version = this.setup.slice(0,3).join('.');
+			packageJson.version = this.setup.version.slice(0,3).join('.');
 			fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
 			electronBuilder.build().then(()=>{
 				console.log(this.runTime(this.setup.versionType));
@@ -173,7 +174,7 @@ function mainBuild(){
 		console.log('打包App主进程');
 		let log = '';
 		del(['./app/main.js']);
-		const mainRenderCompiler = webpack(mainRenderCompiler);
+		const mainRenderCompiler = webpack(mainRenderConfig);
 		mainRenderCompiler.run((err,stats)=>{
 			if(err){
 				console.log('打包主进程出错');
@@ -196,6 +197,7 @@ function mainBuild(){
 	})
 }
 
+build.run();
 
 // viewBuilder().then(data=>{
 // 	console.log("打包输出===>", data);

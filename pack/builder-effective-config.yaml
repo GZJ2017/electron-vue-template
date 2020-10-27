@@ -1,0 +1,39 @@
+directories:
+  output: pack
+  buildResources: build
+asar: true
+productName: Electron+vue
+appId: com.electron.template
+copyright: Copyright © template
+files:
+  - filter:
+      - app/**
+mac:
+  identity: com.electron.template
+  target:
+    - dmg
+  artifactName: '${productName}.${ext}'
+  icon: main/favicon/favicon.icons
+dmg:
+  title: '${productName}'
+  artifactName: '${productName}.${ext}'
+  icon: main/favicon/favicon.icons
+win:
+  legalTrademarks: Copyright © template
+  publisherName: electron
+  requestedExecutionLevel: highestAvailable
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: '${productName}.${ext}'
+  icon: main/favicon/favicon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: true
+  allowElevation: true
+  artifactName: '${productName}-安装包-V${version}.${ext}'
+  runAfterFinish: true
+  shortcutName: Electron+vue+webpack-template
+electronVersion: 10.1.4
