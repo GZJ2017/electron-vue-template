@@ -55,7 +55,9 @@
     ],
     "mac": {
       "identity": "com.electron.template",
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "attifactName": "${productName}.${ext}",
       "icon": "main/favicon/favicon.icons"
     },
@@ -68,12 +70,14 @@
       "legalTrademarks": "Copyright © template",
       "publisherName": "electron",
       "requestedExecutionLevel": "highestAvailable",
-      "target": [{
-        "target": "nsis",
-        "arch": [
-          "ia32"
-        ]
-      }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ],
       "artifactName": "${productName}.${ext}",
       "icon": "main/favicon/favicon.ico"
     },
