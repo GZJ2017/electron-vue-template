@@ -7,16 +7,38 @@ const RegisterEvent = require('./registerEvent');
 require("./libs/runCheck.js")();
 
 class App {
-	constructor({app}){
+	constructor({app, BrowserWindow}){
+		this.mode = process.env.NODE_ENV;
 		this.app = app;
-
+		this.BrowserWindow = BrowserWindow;
+		
 		this.win = null;
+		this.runCheck();
 		this.eventHandle(this.app);
 		this.registerEvent();
 	}
+	runCheck(){
+		const gotTheLock = this.app.requestSingleInstanceLock();
+		if(!gotTheLock) return this.app.quit();
+		this.app.on('second-instance', ()=>{
+			let myWindows = this.BrowserWindow.getAllWindows();
+			myWindows.forEach(win => {
+				if (win && !win.isDestroyed()) {
+					if (win.isMinimized()) win.restore();
+					win.focus();
+				}
+			});
+		})
+	}
 	createWindow(){
 		this.win = mianWindow();
-		this.win.loadURL("http://localhost:8090/");
+		let filePath = '';
+		if(this.mode === 'production'){
+			filePath = url.pathToFileURL(path.join(__dirname, 'index.html')).href;
+		} else {
+			filePath = "http://localhost:8090/";
+		}
+		this.win.loadURL(filePath);
 	}
 	eventHandle(app){
 		app.on('closed', () => this.closed());

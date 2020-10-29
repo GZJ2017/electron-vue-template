@@ -5,9 +5,8 @@ const del = require('del');
 const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
+const { spawn } = require('child_process');
 const renderConfig = require("./webpack.render.config.js");
-
-// del(["./app/*"]);
 
 const build = {
 	setup: {},
@@ -27,7 +26,6 @@ const build = {
 			test: '测试版',
 			release: '正式版'
 		}
-
 		setup.versionType = 'release';
 		setup.versionName = runTimeObj.release;
 		setup.publishTime = Date.now();
@@ -55,18 +53,23 @@ const build = {
 	writeContent(){
 		// const context = require('../src/renderer/libs')
 	},
+	// 创建文件夹，如果文件夹已存在则什么都不做
+	async createFolder(outpath){
+		return new Promise(resolve=>{
+			fs.exists(outpath, exists=>{
+				if(!exists) fs.mkdirSync(outpath);
+				resolve(1);
+			});
+		})
+	},
 	buildApp(){
-		Promise.all([viewBuilder()]).then(resolve=>{
-			// renderConfig
+		Promise.all([viewBuilder()]).then(async resolve => {
 			resolve.forEach(res=> console.log('打包输出===>', res));
 
 			let outpath = path.join(__dirname, '../pack/');
 			console.log(`打包渲染进程完毕！压缩小版本`);
-			try {
-				fs.mkdirSync(outpath);
-			} catch(e){
-				console.log(e);
-			}
+			// 创建一个pack目录
+			await this.createFolder(outpath);
 			let zipPath = renderConfig.output.path;
 			let fileName = this.setup.versionType+ '-' + this.setup.version.join('.');
 			let filePath = path.join(zipPath, `../pack/${fileName}.zip`);
@@ -74,7 +77,7 @@ const build = {
 				if(type === 'error'){
 					Promise.reject('压缩文件出错：'+ msg);
 				} else {
-					this.packMainAndUpdate();
+					this.packMain();
 					console.log(`压缩包大小为：${(msg/ 1024/ 1024).toFixed(2)}MB`);
 				}
 			});
@@ -83,7 +86,7 @@ const build = {
 			process.exit(1);
 		})
 	},
-	packMainAndUpdate(){
+	packMain(){
 		Promise.all([mainBuild()]).then(resolve=>{
 			const electronBuilder = require('electron-builder');
 			const packageJson = require('../package.json');
@@ -92,9 +95,8 @@ const build = {
 			packageJson.version = this.setup.version.slice(0,3).join('.');
 			fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
 			electronBuilder.build().then(()=>{
-				console.log(this.runTime(this.setup.versionType));
-				del(['./pack/*.yaml', './pack/*.yml', './pack/.blockmap']);
-				this.buildEnd();
+				// del(['./pack/*.yaml', './pack/*.yml', './pack/.blockmap']);
+				// this.openExplorer();
 			}).catch(error=>{
 				console.log(error);
 			})
@@ -125,9 +127,8 @@ const build = {
 
 		archive.finalize();
 	},
-	buildEnd() {
-		// 打开文件管理器
-		const { spawn } = require('child_process');
+	// 打开文件管理器
+	openExplorer() {
 		const dirPath = path.join(__dirname, '..', 'pack');
 		if (process.platform === 'darwin') {
 			spawn('open', [dirPath]);

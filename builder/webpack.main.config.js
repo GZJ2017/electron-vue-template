@@ -1,9 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-
 const { dependencies } = require('../package.json');
-
 const isDevMode = process.env.NODE_ENV === 'development';
+
 
 module.exports = {
 	mode: process.env.NODE_ENV,
@@ -35,9 +34,7 @@ module.exports = {
 	},
 	plugins: [
 		new webpack.NoEmitOnErrorsPlugin(),
-		new webpack.DefinePlugin({
-			'process.env.NODE_ENV': "'production'",
-		}),
+		new webpack.DefinePlugin({}),
 	],
 	target: 'electron-main'
 }

@@ -2,7 +2,7 @@
     "name": "electron-vue-template",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "./app/main.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "electron ./src/main/main.js",
@@ -61,12 +61,12 @@
                 "dmg"
             ],
             "artifactName": "${productName}.${ext}",
-            "icon": "main/favicon/favicon.icons"
+            "icon": "main/favicon/favicon.ico"
         },
         "dmg": {
             "title": "${productName}",
             "artifactName": "${productName}.${ext}",
-            "icon": "main/favicon/favicon.icons"
+            "icon": "main/favicon/favicon.ico"
         },
         "win": {
             "legalTrademarks": "Copyright © template",
@@ -90,7 +90,7 @@
             "allowElevation": true,
             "artifactName": "${productName}-安装包-V${version}.${ext}",
             "runAfterFinish": true,
-            "shortcutName": "Electron+vue+webpack-template"
+            "shortcutName": "木头人"
         }
     }
 }

@@ -3,7 +3,7 @@
 	<h1>this is vue page {{txt}}</h1>
 	<head-nav />
 	<button @click="openWin">打开新的子窗口</button>
-	<button>普通按钮</button>
+	<button @click="alert">普通按钮</button>
 </div>
 </template>
 <script>
@@ -31,14 +31,8 @@ export default {
 		openWin(){
 			console.log(this.$event.openChildWindow())
 		},
-		async getData(){
-			let count = await this.getCount()
-			console.log(count);
-		},
-		getCount(){
-			return new Promise(resolve=>{
-				setTimeout(()=>resolve(666),100)
-			})
+		alert(){
+			alert('hello electron');
 		}
 	}
 }
