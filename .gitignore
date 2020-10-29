@@ -104,5 +104,5 @@ dist
 .tern-port
 
 # 排除打包运行产生的文件夹
-pack
-app
+pack/
+app/
