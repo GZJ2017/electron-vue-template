@@ -1,20 +1,13 @@
 const initSqlJs  = require('sql.js');
 const fs = require('fs');
 const path = require('path');
+const Format = require('./Format.js');
 
 
-class Db {
+class Db extends Format {
 	constructor(options){
+		super(options);
 		this.options = options;
-	}
-	isObject(obj){
-		return Object.prototype.toString.call(obj) === "[object Object]";
-	}
-	isArray(arr){
-		return Array.isArray(arr);
-	}
-	isString(str){
-		return str && Object.prototype.toString.call(str) === "[object String]";
 	}
 	async openDatabase(){
 		// 读取本地数据库文件
@@ -38,7 +31,23 @@ class Db {
 		const db = await this.openDatabase();
 		let res = db.exec(sql);
 		db.close();
-		return res.values().next().value;
+		if(res.values().next().value){
+			return this.formatSelectData(res.values().next().value);
+		} else {
+			// 如果没有查询到数据则返回空数组
+			return [];
+		}
+	}
+	/**
+	 * 对某个表的数据进行分页查询
+	 * @param  {String} table 	需要查询的表名
+	 * @param  {Number} page  	查询的页数
+	 * @param  {Number} num   	每一页数据的条数
+	 * @return {Array}       	查询的结果
+	 */
+	async pagingSelect(table, page = 1, num = 10){
+		const SELECT_SQL = `SELECT * FROM ${table} LIMIT ${(page-1) * num}, ${num}`;
+		return await this.select(SELECT_SQL)
 	}
 	/**
 	 * 将数据插入到对于的表中
@@ -64,61 +73,27 @@ class Db {
 		}
 	}
 	/**
-	 * 格式化插入数据
-	 * @param  {Object} data 	需要格式化的对象
-	 * @return {Object}      	返回格式化之后的对象
-	 */
-	formatData(data){
-		return Object.entries(data).reduce((a,b,i) => ({
-			key: a.key + (i ? ',' : '') + b[0],
-			val: a.val + (i ? ',' : '') + (this.isString(b[1]) ? `'${b[1]}'`: b[1])
-		}), {key: '', val: ''});
-	}
-	/**
-	 * 格式化条件数据
-	 * @return {[type]} [description]
-	 */
-	formatWhereData(whe, spt = ' AND '){
-		return Object.entries(whe).map(ele => (
-			ele[0]+'='+ (this.isString(ele[1])? `'${ele[1]}'`: ele[1]))
-		).join(spt);
-	}
-	/**
 	 * 删除指定表中的数据数据，如果不传条件对象则删除整个表的数据
 	 * @param  {String} table 	需要删除数据的表
 	 * @param  {Object} whe   	指定的条件 (该条件支持多个,只支持等于类的条件，其他大于小于或者是其他复杂条件不支持)
 	 * @return {[type]}       [description]
 	 */
-	async delete(table, whe){
+	async delete(table, whe = {}){
 		if(this.isString(table)){
 			let DELETE_SQL = `DELETE FROM ${table} WHERE ${this.formatWhereData(whe)}`;
 			return this.query(DELETE_SQL);
 		}
 	}
-	// 跟新数据
-	async update(table, whe, data){
-		let UPDATE_SQL = `UPDATE ${table} SET ${this.formatWhereData(data, ', ')} where ${this.formatWhereData(whe)}`
-		console.log(UPDATE_SQL);
-		return this.query(UPDATE_SQL);
-	}
 	/**
-	 * 格式化创建表格数据
-	 * @param  {[type]} data [description]
-	 * @return {[type]}      [description]
+	 * 更新数据库中指定表的对于数据
+	 * @param  {String} table 	数据库表名
+	 * @param  {Object} whe   	跟新的条件(只支持相等的条件，其他条件不支持)
+	 * @param  {Object} data  	需要跟新的字段
+	 * @return {[type]}       [description]
 	 */
-	formatCreateTableData(data){
-		let content = '';
-		for(var key in data) {
-			content += `,${key} `;
-			if(Array.isArray(data[key])){
-				content += data[key].join(' ');
-			} else if(typeof data[key] === 'string') {
-				content += data[key];
-			} else {
-				console.error("表的字段约束必须为字符串或者是数组");
-			}
-		}
-		return content.slice(1);
+	async update(table, whe = {}, data = {}){
+		let UPDATE_SQL = `UPDATE ${table} SET ${this.formatWhereData(data, ', ')} where ${this.formatWhereData(whe)}`
+		return this.query(UPDATE_SQL);
 	}
 	/**
 	 * 创建表，如果该表以存在则不创建
@@ -145,25 +120,31 @@ let db = new Db({
 });
 	// 如果需要保证执行顺序
 	(async () => {
-
-
-		// await db.insert('message_list', {
-		// 	msg: 'hello world ！',
-		// 	user_id: 123456,
-		// 	username: 'wanglas'
-		// });
+		// let arr = [];
+		// for(var i = 0; i<1000; i++){
+		// 	arr.push({
+		// 		msg: '消费记录：'+ (Math.random()*100).toFixed(2),
+		// 		user_id: 1234567+i,
+		// 		username: 'wanglas'
+		// 	})
+		// }
+		// await db.insert('message_list', arr);
+		// console.log(arr);
+		// await db.insert('message_list', );
 		// 删除数据中 id = 3 的数据
 		// let dl = await db.delete('message_list', {
 		// 	id: 1
 		// });
-		await db.update('message_list', {
-			id: 2
-		}, {
-			msg: '6666666666666666666666666666666666666',
-			username: 'liting'
-		})
+		// await db.update('message_list', {
+		// 	id: 2
+		// }, {
+		// 	msg: '6666666666666666666666666666666666666',
+		// 	username: 'liting'
+		// })
 		// console.log(dl);
-		let res = await db.select(`select * from message_list`);
+		let res = await db.pagingSelect("message_list", 2, 10);
+		// console.log(res);
+
 		console.log(res);
 		// let res2 = await db.select(`select * from userTable limit 10`);
 		// console.log(res2.values().next().value);
