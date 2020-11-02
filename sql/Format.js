@@ -1,3 +1,4 @@
+
 module.exports =  class format {
 	isObject(obj){
 		return Object.prototype.toString.call(obj) === "[object Object]";
@@ -6,7 +7,7 @@ module.exports =  class format {
 		return Array.isArray(arr);
 	}
 	isString(str){
-		return str && Object.prototype.toString.call(str) === "[object String]";
+		return Object.prototype.toString.call(str) === "[object String]";
 	}
 	/**
 	 * 格式化查询数据，将查询出来的数据进行格式化为json对象
