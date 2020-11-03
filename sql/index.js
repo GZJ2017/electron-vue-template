@@ -13,21 +13,16 @@ class Db extends Format {
 		}, options);
 
 		// 存储数据库表名 和 对应创建表的数据库语句
-		this.tableNames = [{
-			name: 'user_info',
-			sql: this.createUserInfoTable()
-		}, {
-			name: 'file',
-			sql: this.createFileTable()
-		},{
-			name: 'general',
-			sql: this.createGeneralTable()
-		}];
+		this.tableNames = [
+			this.createUserInfoTable(),
+			this.createFileTable(),
+			this.createGeneralTable()
+		];
 	}
 	initDatabase(){
 		return new Promise((resolve, reject) => {
-			fs.exists(this.options.database, async exists => {
-				if(!exists) {
+			fs.stat(this.options.database, async err => {
+				if(err && err.code == 'ENOENT') {
 					// 如果本地不存在该数据库则初始化
 					const SQL = await initSqlJs();
 					let db = new SQL.Database();
@@ -39,14 +34,30 @@ class Db extends Format {
 						resolve({msg:'创建数据成功'});
 					})
 				} else {
-					// 如果存在该数据库则检查数据库表是否都存在
+					// 如果存在该数据库则进行数据库同步
 					let tables = await this.getAllTable();
 					this.tableNames.forEach(async table => {
 						if(!tables.some(t=>t.name === table.name)){
 							await this.query(table.sql);
+						}else {
+							let field = await this.getTableFieldName(table.name);
+							let { newField, oldField } = this.diff(field, [...table.field]);
+							if(newField.length) {
+								// 执行表的字段增加
+								// console.log("需要增加的字段", newField);
+								await this.tableAddField(table.name, newField.reduce((a,b)=>({
+									[b]: table.data[b]
+								}), {}));
+							}
+							// if(oldField.length){
+							// 	// 执行表的字段删除
+							// 	console.log("需要删除的字段", oldField);
+							// 	await this.deleteField(table.name);
+							// }
 						}
+						resolve(1);
 					})
-					resolve();
+					
 				}
 			})
 		});
@@ -79,9 +90,15 @@ class Db extends Format {
 			return [];
 		}
 	}
-	// 简单条件查询
+	/**
+	 * 条件查询，如果不传条件则查询该表的所有数据
+	 * @param  {String} table 表名
+	 * @param  {Object} data  条件
+	 * @return {Object}       查询结果
+	 */
 	async selectWhere(table, data = {}){
-		const SELECT_SQL = `SELECT * FROM ${table} WHERE ${this.formatWhereData(data)}`;
+		data = this.formatWhereData(data);
+		const SELECT_SQL = `SELECT * FROM ${table} ${data? 'WHERE ' + data: ''}`;
 		return await this.select(SELECT_SQL);
 	}
 	/**
@@ -187,8 +204,35 @@ class Db extends Format {
 		let res = await this.query(`TRUNCATE TABLE ${table}`);
 		return res;
 	}
+	/**
+	 * 删除表中的字段
+	 * @param  {String} table    表名
+	 * @return {[type]}          [description]
+	 */
+	// async deleteField(table){
+	// 	let newTable = this.tableNames.filter(t=>t.name === table)[0];
+	// 	const SQL = `ALTER TABLE ${table} RENAME TO temp_table;
+	// 	CREATE TABLE ${table} (${this.formatCreateTableData(newTable.data)});
+	// 	INSERT INTO ${table} (${newTable.field.join()}) SELECT ${newTable.field.join()} FROM temp_table;
+	// 	DROP TABLE temp_table;`;
+	// 	return await this.query(SQL);
+	// }
+	/**
+	 * 获取指定表名的所有字段名
+	 * @param  {String} table 表名
+	 * @return {Array}       该表的字段名数组
+	 */
+	async getTableFieldName(table){
+		let res = await this.select(`PRAGMA table_info("${table}")`);
+		return res.map(ele => ele.name);
+	}
 	createTableSql(tableName, data) {
-		return `CREATE TABLE IF NOT EXISTS ${tableName} (${this.formatCreateTableData(data)})`
+		return {
+			name: tableName,
+			sql: `CREATE TABLE ${tableName} (${this.formatCreateTableData(data)})`,
+			field: Object.keys(data),
+			data
+		}
 	}
 	// 创建用户信息表
 	createUserInfoTable(){
@@ -200,7 +244,8 @@ class Db extends Format {
 			phoneNumber: 'varchar(11)',
 			isAutoLogin: 'integer',
 			startTime: 'timestamp',
-			endTime: 'timestamp'
+			endTime: 'timestamp',
+			// abc: 'test'
 		});
 	}
 	// 创建文件表
@@ -246,12 +291,18 @@ const db = new Db({
 
 		await db.initDatabase();
 
-		// await db.deleteTable('file');
+		// await db.deleteTable('temp_table');
 		// let table = await db.getAllTable()
 		// console.log(table);
+		// db.update('user_info', {
+		// 	username: '13397518026'
+		// }, {
+		// 	isChecked: 1
+		// })
 
-		// let res = await db.pagingSelect("user_info", 0, 10);
+		// let res = await db.getTableFieldName("user_info");
 		// console.log(res);
+		// let ta = await db.deleteField('user_info', 'phoneNumber')
 		// let ts = db.tableAddField('user_info', {
 		// 	abc: 'text'
 		// });
@@ -308,10 +359,10 @@ const db = new Db({
 		// 	startTime: 1603863639800,
 		// 	endTime: 1605159639800
 		// });
-		// let res = await db.selectWhere('user_info', {
-		// 	username: '133975180264'
-		// });
-		// console.log(res);
+		// db.deleteTable('temp_table');
+		// console.log(await db.getTableFieldName('user_info'))
+		let res = await db.select(`select * from user_info`);
+		console.log(res);
 
 		// console.log(data);
 		// let table = await db.getAllTable();

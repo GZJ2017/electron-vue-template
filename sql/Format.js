@@ -1,11 +1,14 @@
 
 module.exports =  class format {
+	// 判断一个变量类型是否为对象
 	isObject(obj){
 		return Object.prototype.toString.call(obj) === "[object Object]";
 	}
+	// 判断一个变量类型是否是数组
 	isArray(arr){
 		return Array.isArray(arr);
 	}
+	// 判断一个变量类型是否是字符串
 	isString(str){
 		return Object.prototype.toString.call(str) === "[object String]";
 	}
@@ -60,5 +63,23 @@ module.exports =  class format {
 			}
 		}
 		return content.slice(1);
+	}
+	/**
+	 * 比较两个数组的差异
+	 * @param  {Array} oldField 	旧数组
+	 * @param  {Array} newField 	新数组
+	 * @return {Object}          	{ newField 表示相对旧数组新增的元素, oldField 表示相对新数组多出的元素 }
+	 */
+	diff(oldField, newField) {
+		newField.forEach((item, index)=>{
+			let idx = oldField.indexOf(item);
+			if(idx >= 0){
+				newField[index] = '';
+				oldField[idx] = '';
+			}
+		});
+		newField = newField.filter(item => item)
+		oldField = oldField.filter(item => item)
+		return { newField, oldField }
 	}
 }
