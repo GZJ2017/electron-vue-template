@@ -22,9 +22,9 @@ class Db extends Format {
 	initDatabase(){
 		return new Promise((resolve, reject) => {
 			fs.stat(this.options.database, async err => {
+				const SQL = await initSqlJs();
 				if(err && err.code == 'ENOENT') {
 					// 如果本地不存在该数据库则初始化
-					const SQL = await initSqlJs();
 					let db = new SQL.Database();
 					this.tableNames.forEach(item => db.run(item.sql));
 					// 将数据库写入本地文件
@@ -36,26 +36,29 @@ class Db extends Format {
 				} else {
 					// 如果存在该数据库则进行数据库同步
 					let tables = await this.getAllTable();
-					this.tableNames.forEach(async table => {
+					for(let table of this.tableNames){
 						if(!tables.some(t=>t.name === table.name)){
 							await this.query(table.sql);
 						}else {
 							let field = await this.getTableFieldName(table.name);
 							let { newField, oldField } = this.diff(field, [...table.field]);
 							if(newField.length) {
-								// 执行表的字段增加
-								// console.log("需要增加的字段", newField);
+								// 执行表的字段增加 
 								await this.tableAddField(table.name, newField.reduce((a,b)=>({
 									[b]: table.data[b]
 								}), {}));
 							}
-							// if(oldField.length){
-							// 	// 执行表的字段删除
-							// 	console.log("需要删除的字段", oldField);
-							// 	await this.deleteField(table.name);
-							// }
+							if(oldField.length){
+								// 执行表的字段删除
+								await this.deleteField(table.name);
+							}
 						}
-						resolve(1);
+					}
+					resolve({msg:'同步数据成功'});
+					// 删除多余的表格
+					let { oldField } = this.diff(tables.map(t=>t.name), this.tableNames.map(t => t.name));
+					oldField.forEach(async t=>{
+						await this.deleteTable(t);
 					})
 					
 				}
@@ -205,18 +208,31 @@ class Db extends Format {
 		return res;
 	}
 	/**
+	 * 修改表的名字
+	 * @param  {String} oldName 旧的表名
+	 * @param  {String} newName 新的表名
+	 * @return {[type]}         [description]
+	 */
+	async updateTableName(oldName, newName){
+		const SQL = `ALTER TABLE ${oldName} RENAME TO ${newName}`;
+		return await this.query(SQL);
+	}
+	/**
 	 * 删除表中的字段
 	 * @param  {String} table    表名
 	 * @return {[type]}          [description]
 	 */
-	// async deleteField(table){
-	// 	let newTable = this.tableNames.filter(t=>t.name === table)[0];
-	// 	const SQL = `ALTER TABLE ${table} RENAME TO temp_table;
-	// 	CREATE TABLE ${table} (${this.formatCreateTableData(newTable.data)});
-	// 	INSERT INTO ${table} (${newTable.field.join()}) SELECT ${newTable.field.join()} FROM temp_table;
-	// 	DROP TABLE temp_table;`;
-	// 	return await this.query(SQL);
-	// }
+	async deleteField(table){
+		const db = await this.openDatabase();
+		let newTable = this.tableNames.filter(t=>t.name === table)[0];
+		let res = db.run(`ALTER TABLE ${table} RENAME TO temp_table;`);
+		res = db.run(`CREATE TABLE ${table} (${this.formatCreateTableData(newTable.data)});`)
+		res = db.run(`INSERT INTO ${table} (${newTable.field.join()}) SELECT ${newTable.field.join()} FROM temp_table;`);
+		res = db.run(`DROP TABLE temp_table;`);
+		fs.writeFileSync(this.options.database, db.export());
+		res.close();
+		return res;
+	}
 	/**
 	 * 获取指定表名的所有字段名
 	 * @param  {String} table 表名
@@ -244,8 +260,7 @@ class Db extends Format {
 			phoneNumber: 'varchar(11)',
 			isAutoLogin: 'integer',
 			startTime: 'timestamp',
-			endTime: 'timestamp',
-			// abc: 'test'
+			endTime: 'timestamp'
 		});
 	}
 	// 创建文件表
@@ -272,13 +287,6 @@ class Db extends Format {
 	}
 
 }
-// 不同环境创建不同的数据库
-let dbName = {
-  'development': '/dbDev.sqlite',
-  'test': '/dbTest.sqlite',
-  'experience': '/dbExp.sqlite',
-  'production': '/db.sqlite'
-};
 
 const db = new Db({
 	database: path.join(__dirname, './data/db.sqlite')
@@ -292,16 +300,22 @@ const db = new Db({
 		await db.initDatabase();
 
 		// await db.deleteTable('temp_table');
-		// let table = await db.getAllTable()
-		// console.log(table);
+		
 		// db.update('user_info', {
 		// 	username: '13397518026'
 		// }, {
 		// 	isChecked: 1
 		// })
 
-		// let res = await db.getTableFieldName("user_info");
-		// console.log(res);
+		let res = await db.getTableFieldName("user_info");
+		console.log(res);
+		// let data = await db.select(`select * from user_info`);
+		// console.log(data);
+		
+		// await db.updateTableName('file', 'fileNames')
+
+		let table = await db.getAllTable()
+		console.log(table);
 		// let ta = await db.deleteField('user_info', 'phoneNumber')
 		// let ts = db.tableAddField('user_info', {
 		// 	abc: 'text'
@@ -338,7 +352,7 @@ const db = new Db({
 		// let res2 = await db.select(`select * from userTable`);
 		// console.log(res2.values().next().value);
 		// console.log(res);
-		// let data = await db.createTable('user_info', {
+		// let data = await db.createTable('test', {
 		// 	username: 'varchar(20)',
 		// 	uppassword: 'varchar(32)',
 		// 	token: 'text',
@@ -350,7 +364,7 @@ const db = new Db({
 		// });
 
 		// await db.insert('user_info', {
-		// 	username: '18873970190',
+		// 	username: '13397518026',
 		// 	uppassword: '4bbfbc93cf9e664a693a83733222e0f5',
 		// 	token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJjb21wYW55SWQiOiJhMWE0YTUxMzgyMTExMWU5OWM3ZTdjZDMwYWQzYTZhOCIsImdlbmRlciI6IjEiLCJvcGVuSWQiOiIwMHB0Ym5kMTQwNjI1NzE5MjE1OTk0NDQyMDM2MzcxNSIsIm9wZW5TeXN0ZW0iOiIiLCJjaGFubmVsIjoidGlja2V0IiwibW9iaWxlIjoiMTMzOTc1MTgwMjYiLCJhQ2xpZW50SWQiOiI4NDdjZTc4NDc4YTIxMWU5OWM3ZTdjZDMwYWQzYTZhOCIsImF2YXRhciI6Imh0dHBzOi8vemhvbmd0YWlvc3MuYm5keHFjLmNvbS8xNjAyMTM3NTk5MzExLnBuZyIsInN5cyI6ImltMiIsInVzZXJOYW1lIjoi5p2O5oy6IiwidXNlcklkIjoiMDBwdGJuZDE0MDYyNTcxOTIxNTk5NDQ0MjAzNjM3MTUiLCJzdGFmZklkIjoiMDBwdGJuZDExMjUwMDI2NDYxNTk5NDQ0MjAzNzMwMTUifSwiY2xpZW50SWQiOiI4NDdjZTc4NDc4YTIxMWU5OWM3ZTdjZDMwYWQzYTZhOCIsImp0aSI6ImU2NmU0Y2YzNGEwZGE3NWEwZTcxZjVlMjhlYTQ3NDg3IiwidXNlcktleSI6Ijg0N2NlNzg0NzhhMjExZTk5YzdlN2NkMzBhZDNhNmE4IzEzMzk3NTE4MDI2I3RpY2tldCNpbTIjZTY2ZTRjZjM0YTBkYTc1YTBlNzFmNWUyOGVhNDc0ODcifQ.2Y88ZmGg97mfl0cf_IwPWHAy79A1ychG0x-dco_GCuE',
 		// 	isChecked: 0,
@@ -361,8 +375,8 @@ const db = new Db({
 		// });
 		// db.deleteTable('temp_table');
 		// console.log(await db.getTableFieldName('user_info'))
-		let res = await db.select(`select * from user_info`);
-		console.log(res);
+		// let res = await db.select(`select * from user_info`);
+		// console.log(res);
 
 		// console.log(data);
 		// let table = await db.getAllTable();
@@ -393,74 +407,4 @@ const db = new Db({
 		// let res = await db.select(`select * from userTable limit 10`);
 		// console.log(JSON.stringify(res));
 	})();
-	// db.insert(`insert into userTable (username, password, info) values(?,?,?)`, ["王五", "142536987", '133']).then(res=>{
-	// 	console.log(res);
-	// })
-
-	// db.delete(`delete from userTable where id=3`).then(res=>{
-	// 	console.log(res);
-	// })
-
-	// db.update(`update userTable set username='motou' where id=2`).then(res=>{
-	// 	if(res){
-	// 		console.log("跟新数据成功");
-	// 	}
-	// })
-	// 创建table 如果表以存在则不创建
-	// db.createTable(`create table if not exists goods (
-	// 	id integer primary key autoincrement,
-	// 	goodsname varchar(12),
-	// 	price init,
-	// 	title varchar(30),
-	// 	desc text
-	// )`).then(res=>{
-	// 	console.log(res);
-	// });
-	
-	// db.select(`select * from userTable`).then(res=>{
-	// 	console.log(JSON.stringify(res));
-	// })
-
-// app.use('/', async (req,res)=>{
-
-// 	res.send(data);
-// })
-// initSqlJs().then(SQL => {
-// 	const db = new SQL.Database(dataDbFile);
-// 	db.run(`insert into userTable (username, password, info) values(?,?,?)`, ["李四", "987654321"])
-// 	let res = db.exec(`select * from userTable`);
-// 	console.log(res);
-// 	db.close();
-	// const db = new SQL.Database();
-	// const CREATE_TABLE_SQL = `create table userTable (
-	// 	id integer primary key autoincrement,
-	// 	username varchar(12),
-	// 	password varchar(16),
-	// 	info text
-	// )`;
-	// db.run(CREATE_TABLE_SQL);
-	// db.run(`insert into userTable (username, password, info) values('张三', '123456', '测试')`)
-				
-	// let res = db.exec(`select * from userTable`);
-	// var binaryArray = db.export();;
-	// console.log(binaryArray);
-	// fs.writeFile('./data/db.db3', binaryArray, (err)=>{
-	// 	if(err) throw err;
-	// 	console.log("文件保存成功");
-	// })
-// })
-
-
-
-
-
-
-
-
-
-
-// const server = app.listen(3000, ()=>{
-// 	console.log('服务器启动成功');
-// })
-
 module.exports = db;
