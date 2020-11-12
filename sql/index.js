@@ -1,97 +1,167 @@
-const initSqlJs  = require('sql.js');
-const fs = require('fs');
-const path = require('path');
-const Format = require('./Format.js');
+import initSqlJs from 'sql.js';
+import fs from 'fs';
+import path from 'path';
+import Table from './Table';
 
-
-class Db extends Format {
-	static instance = null;
+class Db extends Table {
 	constructor(options = {}){
 		super(options);
 		this.options = Object.assign({
-			database: path.join(__dirname, './data/db.sqlite')
+			database: this.getDatabaseUrl().dbpath
 		}, options);
-
+		this.dataDbFile = null;
 		// 存储数据库表名 和 对应创建表的数据库语句
 		this.tableNames = [
 			this.createUserInfoTable(),
 			this.createFileTable(),
-			this.createGeneralTable()
+			this.createGeneralTable(),
+			this.createSystemTable()
 		];
+		this.db = null;
+		this.timer = null;
+		this.once = false;
 	}
 	initDatabase(){
-		return new Promise((resolve, reject) => {
-			fs.stat(this.options.database, async err => {
-				const SQL = await initSqlJs();
-				if(err && err.code == 'ENOENT') {
-					// 如果本地不存在该数据库则初始化
-					let db = new SQL.Database();
-					this.tableNames.forEach(item => db.run(item.sql));
-					// 将数据库写入本地文件
-					fs.writeFile(this.options.database, db.export(), err => {
-						if(err) reject({msg:'写入文件失败'});
-						db.close();
-						resolve({msg:'创建数据成功'});
-					})
-				} else {
-					// 如果存在该数据库则进行数据库同步
-					let tables = await this.getAllTable();
-					for(let table of this.tableNames){
-						if(!tables.some(t=>t.name === table.name)){
-							await this.query(table.sql);
-						}else {
-							let field = await this.getTableFieldName(table.name);
-							let { newField, oldField } = this.diff(field, [...table.field]);
-							if(newField.length) {
-								// 执行表的字段增加 
-								await this.tableAddField(table.name, newField.reduce((a,b)=>({
-									[b]: table.data[b]
-								}), {}));
+		return new Promise((resolve) => {
+			// 判断文件夹是否存在
+			fs.stat(path.dirname(this.options.database), err => {
+				// 文件夹不存在
+				if(err) {
+					fs.mkdirSync(path.dirname(this.options.database),{recursive: true})
+				}
+				// 存在则判断该文件是否存在
+				fs.stat(this.options.database, async err => {
+					if(err && err.code == 'ENOENT') {
+						// 如果本地不存在该数据库则初始化
+						const SQL = await initSqlJs();
+						this.db = new SQL.Database();
+						this.tableNames.forEach(item => this.db.run(item.sql));
+						// 数据库备份
+						this.backupDataBase(this.db);
+						// 将数据库写入本地文件
+						this.throttlingFun(()=>resolve({msg:'创建数据成功'}));
+					} else {
+						// 如果存在该数据库则进行数据库同步
+						try {
+							this.db = await this.openDatabase();
+							let tables = this.db.exec(`SELECT name FROM sqlite_master WHERE type='table'`);
+							tables = this.formatSelectData(tables.values().next().value);
+							for(let table of this.tableNames){
+								if(!tables.some(t=>t.name === table.name)){
+									this.db.run(table.sql);
+								}else {
+									let field = this.db.exec(`PRAGMA table_info("${table.name}")`);
+									field = this.formatSelectData(field.values().next().value).map(t=>t.name);
+									let { newField, oldField } = this.diff(field, [...table.field]);
+									if(newField.length) {
+										// 执行表的字段增加 
+										this.db.run(`ALTER TABLE ${table.name} ADD ${this.formatCreateTableData(newField.reduce((a,b)=>({
+											[b]: table.data[b]
+										}), {}))}`);
+									}
+									if(oldField.length){
+										// 执行表的字段删除
+										this.deleteField(table.name);
+									}
+								}
 							}
-							if(oldField.length){
-								// 执行表的字段删除
-								await this.deleteField(table.name);
-							}
+							// 删除多余的表格
+							let { oldField } = this.diff(tables.map(t=>t.name), this.tableNames.map(t => t.name));
+							oldField.forEach(t=>this.db.run(`DROP TABLE ${t}`));
+							// 备份数据库
+							this.backupDataBase(this.db);
+							this.throttlingFun();
+							resolve({msg:'同步数据库成功'});
+						}catch(err){
+							this.errorHandler(err);
 						}
 					}
-					resolve({msg:'同步数据成功'});
-					// 删除多余的表格
-					let { oldField } = this.diff(tables.map(t=>t.name), this.tableNames.map(t => t.name));
-					oldField.forEach(async t=>{
-						await this.deleteTable(t);
-					})
-					
-				}
+				})
 			})
 		});
 	}
 	async openDatabase(){
 		// 读取本地数据库文件
-		const dataDbFile = fs.readFileSync(this.options.database);
+		this.dataDbFile = fs.readFileSync(this.options.database);
 		// 初始化数据库
 		const SQL = await initSqlJs({});
 		// 创建数据库实例
-		return new SQL.Database(dataDbFile);
+		if(!this.db){
+			this.db = new SQL.Database(this.dataDbFile)
+		}
+		return this.db;
 	}
 	// 执行sql语言
 	async query(sql, data = []){
-		const db = await this.openDatabase();
-		let res = db.run(sql, data);
-		fs.writeFileSync(this.options.database, db.export());
-		res.close();
-		return res;
+		try{
+			this.db = await this.openDatabase();
+			this.db.run(sql, data);
+			this.throttlingFun();
+			return this.db;
+		} catch(err){
+			this.errorHandler(err);
+		}
 	}
 	// 查询数据
 	async select(sql){
-		const db = await this.openDatabase();
-		let res = db.exec(sql);
-		db.close();
-		if(res.values().next().value){
-			return this.formatSelectData(res.values().next().value);
-		} else {
-			// 如果没有查询到数据则返回空数组
-			return [];
+		try{
+			this.db = await this.openDatabase();
+			let res = this.db.exec(sql);
+			this.throttlingFun();
+			if(res.values().next().value){
+				return this.formatSelectData(res.values().next().value);
+			} else {
+				// 如果没有查询到数据则返回空数组
+				return [];
+			}
+		}catch(err){
+			this.errorHandler(err);
+			return [{}];
 		}
+	}
+	/**
+	 * 保证函数顺序执行
+	 * @param {Function} fn 需要调用的函数
+	 * @param {Array} arg 调用函数的参数
+	 */
+	async sequential(fn, arg){
+		return await this[fn](...arg);
+	}
+	/**
+	 * 如果数据库表中存在改数据则跟新该数据，不存在则插入一条新数据
+	 * @param {String} table 表名
+	 * @param {Object} data 需要修改或者插入的数据
+	 * @param {Object} whe 判断数据是否存在的条件
+	 */
+	async mergeData(table, data = {}, whe = {}){
+		this.db = await this.openDatabase();
+		whe = this.formatWhereData(whe);
+		const SELECT_SQL = `SELECT * FROM ${table} ${whe? 'WHERE ' + whe: ''}`;
+		let res = this.db.exec(SELECT_SQL);
+		if(res.values().next().value){
+			let val = this.formatSelectData(res.values().next().value)[0];
+			this.db.run(`UPDATE ${table} SET ${this.formatWhereData({...val,...data}, ', ')} ${whe ? 'where '+ whe: ''};`)
+		} else {
+			data = this.formatData(data);
+			this.db.run(`INSERT INTO ${table} (${data.key}) values(${data.val})`)
+		}
+		this.throttlingFun();
+		return this.db;
+	}
+	/**
+	 * 性能优化节流函数，延迟关闭数据库防止短时间内多次触发数据库文件读写事件
+	 * @param  {Function} cb 回调函数
+	 */
+	throttlingFun(cb){
+		clearTimeout(this.timer);
+		this.timer = setTimeout(()=>{
+			fs.writeFileSync(this.options.database, this.db.export());
+			this.db.close();
+			this.db = null;
+			this.dataDbFile = null;
+			this.once = false;
+			if(cb) cb();
+		},100)
 	}
 	/**
 	 * 条件查询，如果不传条件则查询该表的所有数据
@@ -153,12 +223,12 @@ class Db extends Format {
 	/**
 	 * 更新数据库中指定表的对于数据
 	 * @param  {String} table 	数据库表名
-	 * @param  {Object} whe   	跟新的条件(只支持相等的条件，其他条件不支持)
 	 * @param  {Object} data  	需要跟新的字段
+	 * @param  {Object} whe   	跟新的条件(只支持相等的条件，其他条件不支持)
 	 * @return {[type]}       [description]
 	 */
-	async update(table, whe = {}, data = {}){
-		let UPDATE_SQL = `UPDATE ${table} SET ${this.formatWhereData(data, ', ')} where ${this.formatWhereData(whe)}`
+	async update(table, data = {}, whe){
+		let UPDATE_SQL = `UPDATE ${table} SET ${this.formatWhereData(data, ', ')} ${whe ? 'where '+ this.formatWhereData(whe): ''};`
 		return this.query(UPDATE_SQL);
 	}
 	/**
@@ -223,15 +293,14 @@ class Db extends Format {
 	 * @return {[type]}          [description]
 	 */
 	async deleteField(table){
-		const db = await this.openDatabase();
+		this.db = await this.openDatabase();
 		let newTable = this.tableNames.filter(t=>t.name === table)[0];
-		let res = db.run(`ALTER TABLE ${table} RENAME TO temp_table;`);
-		res = db.run(`CREATE TABLE ${table} (${this.formatCreateTableData(newTable.data)});`)
-		res = db.run(`INSERT INTO ${table} (${newTable.field.join()}) SELECT ${newTable.field.join()} FROM temp_table;`);
-		res = db.run(`DROP TABLE temp_table;`);
-		fs.writeFileSync(this.options.database, db.export());
-		res.close();
-		return res;
+		this.db.run(`ALTER TABLE ${table} RENAME TO temp_table;`);
+		this.db.run(`CREATE TABLE ${table} (${this.formatCreateTableData(newTable.data)});`)
+		this.db.run(`INSERT INTO ${table} (${newTable.field.join()}) SELECT ${newTable.field.join()} FROM temp_table;`);
+		this.db.run(`DROP TABLE temp_table;`);
+		this.throttlingFun();
+		return this.db;
 	}
 	/**
 	 * 获取指定表名的所有字段名
@@ -242,169 +311,7 @@ class Db extends Format {
 		let res = await this.select(`PRAGMA table_info("${table}")`);
 		return res.map(ele => ele.name);
 	}
-	createTableSql(tableName, data) {
-		return {
-			name: tableName,
-			sql: `CREATE TABLE ${tableName} (${this.formatCreateTableData(data)})`,
-			field: Object.keys(data),
-			data
-		}
-	}
-	// 创建用户信息表
-	createUserInfoTable(){
-		return this.createTableSql('user_info', {
-			username: 'varchar(20)',
-			uppassword: 'varchar(32)',
-			token: 'text',
-			isChecked: 'integer',
-			phoneNumber: 'varchar(11)',
-			isAutoLogin: 'integer',
-			startTime: 'timestamp',
-			endTime: 'timestamp'
-		});
-	}
-	// 创建文件表
-	createFileTable(){
-		return this.createTableSql('file', {
-			mid: 'varchar(32)',
-			uuid: 'varchar(50)',
-			filePath: 'text',
-			fileName: 'varchar(255)',
-			state: 'varchar(20)',
-			createTime: 'timestamp',
-			compeleteTime: 'timestamp'
-		});
-	}
-	// 创建通用信息表
-	createGeneralTable(){
-		return this.createTableSql('general', {
-			isCutShow: 'integer',
-			winWidth: 'integer', 			// 窗口宽度
-			winHeight: 'integer', 			// 窗口高度
-			versionsContrast: 'integer',	// 版本对比
-			moreVideoGuide: 'integer'
-		})
-	}
-
 }
 
-const db = new Db({
-	database: path.join(__dirname, './data/db.sqlite')
-});
-
-	
-
-	// 如果需要保证执行顺序
-	(async () => {
-
-		await db.initDatabase();
-
-		// await db.deleteTable('temp_table');
-		
-		// db.update('user_info', {
-		// 	username: '13397518026'
-		// }, {
-		// 	isChecked: 1
-		// })
-
-		let res = await db.getTableFieldName("user_info");
-		console.log(res);
-		// let data = await db.select(`select * from user_info`);
-		// console.log(data);
-		
-		// await db.updateTableName('file', 'fileNames')
-
-		let table = await db.getAllTable()
-		console.log(table);
-		// let ta = await db.deleteField('user_info', 'phoneNumber')
-		// let ts = db.tableAddField('user_info', {
-		// 	abc: 'text'
-		// });
-		// console.log(ts);
-		// let table = await db.getAllTable()
-		// console.log(table);
-		// let arr = [];
-		// for(var i = 0; i<1000; i++){
-		// 	arr.push({
-		// 		msg: '消费记录：'+ (Math.random()*100).toFixed(2),
-		// 		user_id: 1234567+i,
-		// 		username: 'wanglas'
-		// 	})
-		// }
-		// await db.insert('message_list', arr);
-		// console.log(arr);
-		// await db.insert('message_list', );
-		// 删除数据中 id = 3 的数据
-		// let dl = await db.delete('message_list', {
-		// 	id: 1
-		// });
-		// await db.update('message_list', {
-		// 	id: 2
-		// }, {
-		// 	msg: '6666666666666666666666666666666666666',
-		// 	username: 'liting'
-		// })
-		// console.log(dl);
-		// let res = await db.pagingSelect("message_list", 0, 1000);
-		// console.log(res);
-
-		// console.log(res);
-		// let res2 = await db.select(`select * from userTable`);
-		// console.log(res2.values().next().value);
-		// console.log(res);
-		// let data = await db.createTable('test', {
-		// 	username: 'varchar(20)',
-		// 	uppassword: 'varchar(32)',
-		// 	token: 'text',
-		// 	isChecked: 'integer',
-		// 	phoneNumber: 'varchar(11)',
-		// 	isAutoLogin: 'integer',
-		// 	startTime: 'timestamp',
-		// 	endTime: 'timestamp'
-		// });
-
-		// await db.insert('user_info', {
-		// 	username: '13397518026',
-		// 	uppassword: '4bbfbc93cf9e664a693a83733222e0f5',
-		// 	token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJjb21wYW55SWQiOiJhMWE0YTUxMzgyMTExMWU5OWM3ZTdjZDMwYWQzYTZhOCIsImdlbmRlciI6IjEiLCJvcGVuSWQiOiIwMHB0Ym5kMTQwNjI1NzE5MjE1OTk0NDQyMDM2MzcxNSIsIm9wZW5TeXN0ZW0iOiIiLCJjaGFubmVsIjoidGlja2V0IiwibW9iaWxlIjoiMTMzOTc1MTgwMjYiLCJhQ2xpZW50SWQiOiI4NDdjZTc4NDc4YTIxMWU5OWM3ZTdjZDMwYWQzYTZhOCIsImF2YXRhciI6Imh0dHBzOi8vemhvbmd0YWlvc3MuYm5keHFjLmNvbS8xNjAyMTM3NTk5MzExLnBuZyIsInN5cyI6ImltMiIsInVzZXJOYW1lIjoi5p2O5oy6IiwidXNlcklkIjoiMDBwdGJuZDE0MDYyNTcxOTIxNTk5NDQ0MjAzNjM3MTUiLCJzdGFmZklkIjoiMDBwdGJuZDExMjUwMDI2NDYxNTk5NDQ0MjAzNzMwMTUifSwiY2xpZW50SWQiOiI4NDdjZTc4NDc4YTIxMWU5OWM3ZTdjZDMwYWQzYTZhOCIsImp0aSI6ImU2NmU0Y2YzNGEwZGE3NWEwZTcxZjVlMjhlYTQ3NDg3IiwidXNlcktleSI6Ijg0N2NlNzg0NzhhMjExZTk5YzdlN2NkMzBhZDNhNmE4IzEzMzk3NTE4MDI2I3RpY2tldCNpbTIjZTY2ZTRjZjM0YTBkYTc1YTBlNzFmNWUyOGVhNDc0ODcifQ.2Y88ZmGg97mfl0cf_IwPWHAy79A1ychG0x-dco_GCuE',
-		// 	isChecked: 0,
-		// 	phoneNumber: '',
-		// 	isAutoLogin: 1,
-		// 	startTime: 1603863639800,
-		// 	endTime: 1605159639800
-		// });
-		// db.deleteTable('temp_table');
-		// console.log(await db.getTableFieldName('user_info'))
-		// let res = await db.select(`select * from user_info`);
-		// console.log(res);
-
-		// console.log(data);
-		// let table = await db.getAllTable();
-		// console.log(table);
-		// db.createTable(`create table if not exists goods (
-		// 	id integer primary key autoincrement,
-		// 	goodsname varchar(12),
-		// 	price init,
-		// 	title varchar(30),
-		// 	desc text
-		// )`).then(res=>{
-		// 	console.log(res);
-		// });
-
-		// db.getAllTable().then(tables => {
-		// 	console.log(tables);
-		// })
-
-
-		// 先执行插入操作
-		// let res = await db.insert('userTable', {
-		// 	username: 'motou',
-		// 	password: '1557465820',
-		// 	info: '666 '
-		// });
-		// console.log(res);
-		// 再查下数据库
-		// let res = await db.select(`select * from userTable limit 10`);
-		// console.log(JSON.stringify(res));
-	})();
-module.exports = db;
+let db = new Db();
+export default db;

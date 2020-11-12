@@ -1,5 +1,5 @@
 
-module.exports =  class format {
+module.exports =  class Format {
 	// 判断一个变量类型是否为对象
 	isObject(obj){
 		return Object.prototype.toString.call(obj) === "[object Object]";
