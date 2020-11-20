@@ -40,6 +40,8 @@
     },
     "dependencies": {
         "axios": "^0.20.0",
+        "core-js": "^2.6.11",
+        "electron-dev-webpack-plugin": "^1.0.5",
         "vue": "^2.6.12",
         "vue-router": "^3.4.7",
         "vuex": "^3.5.1"

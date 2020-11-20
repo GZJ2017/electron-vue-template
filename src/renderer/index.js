@@ -6,9 +6,10 @@ import event from './event';
 
 Vue.prototype.$event = event;
 
-
 let app = new Vue({
 	store,
 	router,
 	render: h => h(App)
 }).$mount("#app");
+
+console.log(123);

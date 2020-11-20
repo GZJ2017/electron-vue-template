@@ -64,6 +64,8 @@ class App {
 	}
 }
 
+// console.log("hello world");
+
 let app = new App(electron);
 
 module.exports = app; 

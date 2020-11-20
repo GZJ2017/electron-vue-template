@@ -1,8 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const { dependencies } = require('../package.json');
+const ElectronDevWebpackPlugin = require('electron-dev-webpack-plugin');
 const isDevMode = process.env.NODE_ENV === 'development';
-
 
 module.exports = {
 	mode: process.env.NODE_ENV,
@@ -14,6 +14,7 @@ module.exports = {
 		libraryTarget: 'commonjs2',
 		filename: '[name].js'
 	},
+	watch: true,
 	devtool: isDevMode ? 'cheap-module-source-map': 'source-map',
 	optimization: {
 		minimize: true
@@ -35,6 +36,7 @@ module.exports = {
 	plugins: [
 		new webpack.NoEmitOnErrorsPlugin(),
 		new webpack.DefinePlugin({}),
+		new ElectronDevWebpackPlugin(),
 	],
 	target: 'electron-main'
 }
