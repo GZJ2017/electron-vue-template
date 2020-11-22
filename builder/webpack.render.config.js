@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const isDevMode = process.env.NODE_ENV === 'development';
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
@@ -106,8 +105,7 @@ module.exports = {
 		new MiniCssExtractPlugin({
 			filename: 'css/[name].css',
 			chunkFilename: 'css/[id].css',
-		}),
-		new CleanWebpackPlugin()
+		})
 	],
 	target: 'electron-renderer',
 }

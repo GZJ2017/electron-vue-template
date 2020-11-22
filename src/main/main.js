@@ -62,7 +62,6 @@ class App {
 		this.win = null;
 	}
 }
-console.log(1111)
 let app = new App(electron);
 
 module.exports = app; 
