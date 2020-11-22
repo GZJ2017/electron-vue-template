@@ -109,5 +109,5 @@ module.exports = {
 		}),
 		new CleanWebpackPlugin()
 	],
-	target: 'electron-renderer'
+	target: 'electron-renderer',
 }

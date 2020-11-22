@@ -6,7 +6,7 @@ import event from './event';
 
 Vue.prototype.$event = event;
 
-
+console.log(123456)
 let app = new Vue({
 	store,
 	router,

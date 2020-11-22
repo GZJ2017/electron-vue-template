@@ -95,8 +95,8 @@ const build = {
 			packageJson.version = this.setup.version.slice(0,3).join('.');
 			fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
 			electronBuilder.build().then(()=>{
-				// del(['./pack/*.yaml', './pack/*.yml', './pack/.blockmap']);
-				// this.openExplorer();
+				del(['./pack/*.yaml', './pack/*.yml', './pack/.blockmap']);
+				this.openExplorer();
 			}).catch(error=>{
 				console.log(error);
 			})
@@ -199,10 +199,3 @@ function mainBuild(){
 }
 
 build.run();
-
-// viewBuilder().then(data=>{
-// 	console.log("打包输出===>", data);
-// }).catch(err=>{
-// 	console.log("打包出错===>", err);
-// 	process.exit(1);
-// })

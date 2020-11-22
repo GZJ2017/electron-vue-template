@@ -4,7 +4,6 @@ const Shortcut = require('./shortcut');
 const electron = require('electron');
 const { mianWindow } = require('./createWindow');
 const RegisterEvent = require('./registerEvent');
-require("./libs/runCheck.js")();
 
 class App {
 	constructor({app, BrowserWindow}){
@@ -63,7 +62,7 @@ class App {
 		this.win = null;
 	}
 }
-
+console.log(1111)
 let app = new App(electron);
 
 module.exports = app; 
