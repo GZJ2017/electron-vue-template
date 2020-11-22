@@ -4,7 +4,6 @@ const { mainWindowChild } = require('../createWindow');
 class addEvent {
 	constructor(win){
 		this.win = win;
-
 		this.openChildWindow();
 	}
 	openChildWindow(){
@@ -12,6 +11,7 @@ class addEvent {
 			let child = mainWindowChild({
 				parent: this.win
 			});
+			child.loadURL("http://www.baidu.com")
 			child.show();
 			child.on('closed',()=>{
 				console.log('child is closed');
