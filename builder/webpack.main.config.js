@@ -14,7 +14,7 @@ module.exports = {
 		libraryTarget: 'commonjs2',
 		filename: '[name].js'
 	},
-	watch: true,
+	watch: isDevMode,
 	devtool: isDevMode ? 'cheap-module-source-map': 'source-map',
 	optimization: {
 		minimize: true

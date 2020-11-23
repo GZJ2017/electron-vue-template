@@ -85,7 +85,7 @@ module.exports = {
 	},
 	node: {
 		__dirname: isDevMode,
-		__filename: isDevMode
+		__filename: isDevMode,
 	},
 	resolve: {
 		// 引入文件时可以省略文件后缀名
