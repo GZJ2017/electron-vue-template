@@ -11,6 +11,12 @@ const mainRenderConfig = require('./webpack.main.config');
 const electronBuilder = require('electron-builder');
 const packageJson = require('../package.json');
 const archiver = require('archiver');
+// 设置 app 一些选项
+// 打包渲染进程
+// 压缩渲染进程
+// 打包主进程
+// 打包App
+
 
 const build = {
 	setup: {},
@@ -169,13 +175,5 @@ const build = {
 		})
 	}
 }
-
-
-
-
-
-
-
-
 
 build.run();

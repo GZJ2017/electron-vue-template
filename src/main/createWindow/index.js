@@ -26,7 +26,7 @@ module.exports = {
 		options = Object.assign({
 			width: 500,
 			height: 500,
-			modal: true,
+			// modal: true,
 			webPreferences: {
 				nodeIntegration: true//默认是false
 			}
