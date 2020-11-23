@@ -7,6 +7,10 @@ const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
 const renderConfig = require("./webpack.render.config.js");
+const mainRenderConfig = require('./webpack.main.config');
+const electronBuilder = require('electron-builder');
+const packageJson = require('../package.json');
+const archiver = require('archiver');
 
 const build = {
 	setup: {},
@@ -14,9 +18,7 @@ const build = {
 		del(['./app/*', './pack/*']);
 		// 初始化版本信息
 		this.initSetup();
-
 		this.writeVersionConfig();
-		this.writeContent();
 		this.buildApp();
 	},
 	initSetup(){
@@ -26,7 +28,6 @@ const build = {
 			test: '测试版',
 			release: '正式版'
 		}
-		setup.versionType = 'release';
 		setup.versionName = runTimeObj.release;
 		setup.publishTime = Date.now();
 		Object.keys(runTimeObj).forEach(key=>{
@@ -38,20 +39,15 @@ const build = {
 		this.runTime(setup.versionType);
 		this.setup = setup;
 
-
 	},
 	runTime(val){
 		console.log(
 			chalk.black.bgYellow('当前环境为：')
 			+ chalk.yellow.bgRed.bold(val)
-			+ chalk.black.bgYellow('环境')
 		);
 	},
 	writeVersionConfig(){
 		fs.writeFileSync(path.join(__dirname, '../config/version.js'), `module.exports = ${JSON.stringify(this.setup, null, 4)}`);
-	},
-	writeContent(){
-		// const context = require('../src/renderer/libs')
 	},
 	// 创建文件夹，如果文件夹已存在则什么都不做
 	async createFolder(outpath){
@@ -63,11 +59,9 @@ const build = {
 		})
 	},
 	buildApp(){
-		Promise.all([viewBuilder()]).then(async resolve => {
+		Promise.all([this.viewBuilder()]).then(async resolve => {
 			resolve.forEach(res=> console.log('打包输出===>', res));
-
 			let outpath = path.join(__dirname, '../pack/');
-			console.log(`打包渲染进程完毕！压缩小版本`);
 			// 创建一个pack目录
 			await this.createFolder(outpath);
 			let zipPath = renderConfig.output.path;
@@ -87,16 +81,13 @@ const build = {
 		})
 	},
 	packMain(){
-		Promise.all([mainBuild()]).then(resolve=>{
-			const electronBuilder = require('electron-builder');
-			const packageJson = require('../package.json');
+		Promise.all([this.mainBuild()]).then(resolve=>{
 			resolve.forEach(res => console.log('打包输出===>', res));
-
 			packageJson.version = this.setup.version.slice(0,3).join('.');
 			fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
 			electronBuilder.build().then(()=>{
-				// del(['./pack/*.yaml', './pack/*.yml', './pack/.blockmap']);
-				// this.openExplorer();
+				del(['./pack/*.yaml', './pack/*.yml', './pack/.blockmap']);
+				this.openExplorer();
 			}).catch(error=>{
 				console.log(error);
 			})
@@ -106,7 +97,6 @@ const build = {
 		})
 	},
 	compress(filePath, zipPath, level = 9, callback){
-		const archiver = require('archiver');
 		const outpath = fs.createWriteStream(zipPath);
 		const archive = archiver('zip', {
 			zlib: {
@@ -137,72 +127,55 @@ const build = {
 		} else if (process.platform === 'linux') {
 			spawn('nautilus', [dirPath]);
 		}
+	},
+	logHandle(stats) {
+		const compilation = stats.compilation;
+		Object.keys(compilation.assets).forEach(key => console.log('\n' + chalk.blue(key)));
+		compilation.warnings.forEach(key => console.log('\n' + chalk.yellow(key)));
+		compilation.errors.forEach(key => console.log('\n' + chalk.red(`${key}:${stats.compilation.errors[key]}`)));
+		console.log('\n' + chalk.green(`time:${(stats.endTime-stats.startTime)/1000} s`));
+	},
+	viewBuilder(){
+		return new Promise((resolve, reject)=>{
+			console.log("打包渲染进程");
+			const renderCompiler = webpack(renderConfig);
+			renderCompiler.run((err, stats)=>{
+				if(err){
+					console.log("打包渲染进程Error");
+					reject(chalk.red(err));
+				} else {
+					this.logHandle(stats);
+					resolve();
+				}
+			})
+		})
+	},
+	mainBuild(){
+		return new Promise((resolve, reject)=>{
+			console.log('打包App主进程');
+			let log = '';
+			del(['./app/main.js']);
+			const mainRenderCompiler = webpack(mainRenderConfig);
+			mainRenderCompiler.run((err,stats)=>{
+				if(err){
+					console.log('打包主进程出错');
+					reject(chalk.red(err));
+				} else {
+					this.logHandle(stats);
+	                console.log('打包主进程完毕！');
+	                resolve();
+				}
+			})
+		})
 	}
 }
 
 
 
-function viewBuilder(){
-	return new Promise((resolve, reject)=>{
-		console.log("打包渲染进程");
-		const renderCompiler = webpack(renderConfig);
-		renderCompiler.run((err, stats)=>{
-			if(err){
-				console.log("打包渲染进程Error");
-				reject(chalk.red(err));
-			} else {
-				let log = "";
-				stats.compilation.errors.forEach(key=>{
-					log += chalk.red(`${key}:${stats.compilation.errors[key]}\n`);
-				});
-				stats.compilation.warnings.forEach(key=>{
-					log += chalk.yellow(key)+ "\n";
-				});
-				Object.keys(stats.compilation.assets).forEach(key=>{
-					log += chalk.blue(key)+ "\n";
-				});
-				log += chalk.green(`time:${(stats.endTime-stats.startTime)/1000}s\n`);
-				resolve(log);
-			}
-		})
-	})
-}
 
-const mainRenderConfig = require('./webpack.main.config');
 
-function mainBuild(){
-	return new Promise((resolve, reject)=>{
-		console.log('打包App主进程');
-		let log = '';
-		del(['./app/main.js']);
-		const mainRenderCompiler = webpack(mainRenderConfig);
-		mainRenderCompiler.run((err,stats)=>{
-			if(err){
-				console.log('打包主进程出错');
-				reject(chalk.red(err));
-			} else {
-				Object.keys(stats.compilation.assets).forEach(key => {
-                    log += chalk.blue(key) + '\n';
-                });
-                stats.compilation.warnings.forEach(key => {
-                    log += chalk.yellow(key) + '\n';
-                });
-                stats.compilation.errors.forEach(key => {
-                    log += chalk.red(`${key}:${stats.compilation.errors[key]}`) + '\n';
-                });
-                log += chalk.green(`time：${(stats.endTime - stats.startTime) / 1000} s\n`) + '\n';
-                console.log('打包主进程完毕！');
-                resolve(log);
-			}
-		})
-	})
-}
+
+
+
 
 build.run();
-
-// viewBuilder().then(data=>{
-// 	console.log("打包输出===>", data);
-// }).catch(err=>{
-// 	console.log("打包出错===>", err);
-// 	process.exit(1);
-// })

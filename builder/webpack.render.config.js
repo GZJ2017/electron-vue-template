@@ -107,5 +107,5 @@ module.exports = {
 			chunkFilename: 'css/[id].css',
 		})
 	],
-	target: 'electron-renderer'
+	target: 'electron-renderer',
 }

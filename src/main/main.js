@@ -4,18 +4,15 @@ const Shortcut = require('./shortcut');
 const electron = require('electron');
 const { mianWindow } = require('./createWindow');
 const RegisterEvent = require('./registerEvent');
-require("./libs/runCheck.js")();
 
 class App {
 	constructor({app, BrowserWindow}){
 		this.mode = process.env.NODE_ENV;
 		this.app = app;
 		this.BrowserWindow = BrowserWindow;
-		
 		this.win = null;
 		this.runCheck();
 		this.eventHandle(this.app);
-		this.registerEvent();
 	}
 	runCheck(){
 		const gotTheLock = this.app.requestSingleInstanceLock();
@@ -39,6 +36,8 @@ class App {
 			filePath = "http://localhost:8090/";
 		}
 		this.win.loadURL(filePath);
+		// 等待渲染进程页面加载完毕再显示窗口
+		this.win.once('ready-to-show', () => this.win.show())
 	}
 	eventHandle(app){
 		app.on('closed', () => this.closed());
@@ -56,16 +55,14 @@ class App {
 		this.event = new RegisterEvent(this.win);
 	}
 	ready(){
-		this.createWindow();
-		new Shortcut(this.win);
+		this.createWindow(); 			// 创建主窗口
+		new Shortcut(this.win);			// 设置快捷键
+		this.registerEvent(this.win);	// 注册事件
 	}
 	closed(){
 		this.win = null;
 	}
 }
-
-// console.log("hello world");
-
 let app = new App(electron);
 
 module.exports = app; 
