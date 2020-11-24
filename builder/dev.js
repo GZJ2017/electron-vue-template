@@ -1,12 +1,3 @@
-/*
- * @Author: your name
- * @Date: 2020-10-21 22:59:44
- * @LastEditTime: 2020-11-22 14:42:09
- * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
- * @FilePath: \electron-vue-template\builder\dev.js
- */
-
 process.env.NODE_ENV = 'development';
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
@@ -45,10 +36,7 @@ function devRender(){
 	    new WebpackDevServer(compiler, {
 			contentBase: webpackDevConfig.output.path,
 			publicPath: webpackDevConfig.output.publicPath,
-			inline: true,
-			hot: true,
-			quiet: true,
-			progress: true
+			hot: true,				// 开启热加载
 		}).listen(8090, (err)=>{
 			if(err) {
 				reject(err);

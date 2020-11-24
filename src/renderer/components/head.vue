@@ -47,17 +47,3 @@ export default {
 			font-size: 20px
 			color: red
 </style>
-
-<!-- <style scoped>
-.header {
-	width: 500px;
-	height: 500px;
-	border: 1px solid #000;
-}
-.imgs {
-	border: 5px solid red;
-	width: 100px;
-	height: 100px;
-	background: url('@/assets/tuite.png');
-}
-</style> -->

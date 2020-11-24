@@ -3,7 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const isDevMode = process.env.NODE_ENV === 'development';
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-// const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
@@ -98,17 +99,22 @@ module.exports = {
 	},
 	plugins: [
 		// new CleanWebpackPlugin(),
-		new HtmlWebpackPlugin({
+		new HtmlWebpackPlugin({		// HTML页面模板插件
 			template: './src/renderer/index.html',
 			filename: './index.html',
 			hash: true,
 		}),
-		new VueLoaderPlugin(),
-		new MiniCssExtractPlugin({
+		new VueLoaderPlugin(),		// vue-loader 加载插件
+		new MiniCssExtractPlugin({	// css打包成css文件插件
 			filename: 'css/[name].css',
 			chunkFilename: 'css/[id].css',
 		}),
-
+		new CopyPlugin({ // 复制静态文件
+			patterns: [{
+				from: path.join(__dirname, '../src/renderer/assets'),
+				to: path.join(__dirname, '../app/assets')
+			}]
+		})
 	],
 	target: 'electron-renderer',
 }

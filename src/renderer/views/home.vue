@@ -14,7 +14,7 @@ export default {
 	name: 'home',
 	data(){
 		return {
-			txt: "hello 111"
+			txt: "hello electron1234"
 		}
 	},
 	components: {
@@ -27,7 +27,6 @@ export default {
 	},
 	mounted(){
 		console.log(this.userInfo);
-		// this.getData();
 	},
 	methods: {
 		openWin(){
