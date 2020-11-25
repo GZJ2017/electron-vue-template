@@ -109,12 +109,10 @@ const build = {
 				level
 			}
 		});
-
 		archive.pipe(outpath);
 		archive.directory(filePath, false);
 		archive.on('error', err => {
 			if(callback) callback('error', err);
-
 		});
 		outpath.on('close', ()=>{
 			let size = archive.pointer();

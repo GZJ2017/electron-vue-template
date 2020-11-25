@@ -2,8 +2,8 @@
 <div class="home">
 	<h1>this is vue page {{txt}}</h1>
 	<head-nav />
-	<button @click="openWin">打开新的子窗口</button>
-	<button @click="alert">弹窗按钮</button>
+	<Button @click="openWin">打开新的子窗口</Button>
+	<Button @click="alert">弹窗按钮</Button>
 </div>
 </template>
 
@@ -14,7 +14,7 @@ export default {
 	name: 'home',
 	data(){
 		return {
-			txt: "hello electron1234"
+			txt: "hello electron123"
 		}
 	},
 	components: {

@@ -4,7 +4,7 @@ const isDevMode = process.env.NODE_ENV === 'development';
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+// const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
@@ -19,7 +19,6 @@ module.exports = {
 	module: {
 		rules: [{
 			test: /\.vue$/,
-			exclude: /node_modules/,
 			loader: 'vue-loader'
 		}, { // 配置sass语法支持，并且使用的是缩进格式
 			test: /\.s[ac]ss$/,
@@ -72,9 +71,9 @@ module.exports = {
 				}
 			}
 		}, { // 配置字体文件加载
-			test: /\.(woff2?|eot|tff|otf)(\?.*)?$/,
+			test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
 			use: {
-				loader: 'url-loader',
+				loader: 'file-loader',
 				options: {
 					esModule: false,
 					limit: 10000
