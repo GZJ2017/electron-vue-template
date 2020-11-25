@@ -9,7 +9,7 @@ class addEvent {
 	openChildWindow(){
 		ipcMain.on('open-child-window', ()=>{
 			let child = mainWindowChild({
-				parent: this.win
+				// parent: this.win
 			});
 			child.loadURL("http://www.baidu.com");
 			child.on('closed',()=>{

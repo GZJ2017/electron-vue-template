@@ -30,7 +30,7 @@ export default {
 	},
 	methods: {
 		openWin(){
-			console.log(this.$event.openChildWindow())
+			this.$event.openChildWindow();
 		},
 		alert(){
 			alert('hello electron');

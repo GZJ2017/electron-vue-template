@@ -12,7 +12,7 @@ class App {
 		this.BrowserWindow = BrowserWindow;
 		this.win = null;
 		this.runCheck();
-		this.eventHandle(this.app);
+		this.eventHandle(app);
 	}
 	runCheck(){
 		const gotTheLock = this.app.requestSingleInstanceLock();
@@ -29,12 +29,10 @@ class App {
 	}
 	createWindow(){
 		this.win = mianWindow();
-		let filePath = '';
-		if(this.mode === 'production'){
-			filePath = url.pathToFileURL(path.join(__dirname, 'index.html')).href;
-		} else {
-			filePath = "http://localhost:8090/";
-		}
+		this.mode === 'production';
+		let filePath = this.mode === 'production'
+			? url.pathToFileURL(path.join(__dirname, 'index.html')).href
+			: "http://localhost:8090/";
 		this.win.loadURL(filePath);
 		// 等待渲染进程页面加载完毕再显示窗口
 		this.win.once('ready-to-show', () => this.win.show())

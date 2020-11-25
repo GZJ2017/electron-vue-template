@@ -44,7 +44,6 @@ const build = {
 		});
 		this.runTime(setup.versionType);
 		this.setup = setup;
-
 	},
 	runTime(val){
 		console.log(
