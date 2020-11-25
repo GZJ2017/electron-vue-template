@@ -1,13 +1,5 @@
 const { BrowserWindow, dialog } = require('electron');
 
-const process = require('process');
-const url = require('url');
-const path = require('path');
-const cookie = require('cookie');
-
-const isDevMode = process.env.NODE_ENV === 'development';
-
-
 module.exports = {
 	mianWindow(options = {}){
 		options = Object.assign({
