@@ -17,6 +17,7 @@
 
 ### 项目目录结构
 
+```
 |—— app
 |—— pack
 |—— builder
@@ -31,6 +32,7 @@
 |—— package.json
 |—— README.md
 
+```
 
 SourceMap: 配置参考地址：
 1. https://juejin.im/post/6844903450644316174
