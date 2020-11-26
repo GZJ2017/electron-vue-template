@@ -62,6 +62,3 @@ class App {
 	}
 }
 let app = new App(electron);
-
-
-module.exports = app; 

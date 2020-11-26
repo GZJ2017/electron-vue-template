@@ -11,10 +11,7 @@ import {
 Vue.component('Button', Button);
 Vue.component('Table', Table);
 
-
 Vue.prototype.$event = event;
-
-
 
 let app = new Vue({
 	store,
