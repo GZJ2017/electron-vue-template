@@ -4,7 +4,9 @@ const isDevMode = process.env.NODE_ENV === 'development';
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
-// const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const UglifyJS = require('uglify-es');
+const uglifycss = require('uglifycss');
 
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
@@ -39,7 +41,7 @@ module.exports = {
 				}
 			]
 		}, { // 配置支持css支持
-			test: /\.css$/,
+			test: /\.css(\?.*)?$/,
 			use: [
 				...(
 					isDevMode 
@@ -49,7 +51,7 @@ module.exports = {
 				'css-loader'
 			]
 		}, { // 配置Babel将ES6+ 转换为ES5
-			test: /\.js$/,
+			test: /\.js(\?.*)?$/,
 			exclude: file => ( // 排除node_modules文件夹
 				/node_modules/.test(file) &&
 				!/\.vue\.js/.test(file)
@@ -97,7 +99,9 @@ module.exports = {
 		}
 	},
 	plugins: [
-		// new CleanWebpackPlugin(),
+		new CleanWebpackPlugin({ // 清除所有文件，main.js文件除外
+			cleanOnceBeforeBuildPatterns: ['**/*', '!main.js*']
+		}),
 		new HtmlWebpackPlugin({		// HTML页面模板插件
 			template: './src/renderer/index.html',
 			filename: './index.html',
@@ -111,7 +115,18 @@ module.exports = {
 		new CopyPlugin({ // 复制静态文件
 			patterns: [{
 				from: path.join(__dirname, '../src/renderer/assets'),
-				to: path.join(__dirname, '../app/assets')
+				to: path.join(__dirname, '../app/assets'),
+				transform(content, path){ // 将复制的css和js进行压缩
+					if(/\.css$/.test(path)){
+						return uglifycss.processFiles([path]);
+					}
+					if(/\.js$/.test(path)){
+						return UglifyJS.minify(content.toString()).code;
+					}
+				}
+			}, {
+				from: path.join(__dirname, '../src/pages'),
+				to: path.join(__dirname, '../app/pages')
 			}]
 		})
 	],

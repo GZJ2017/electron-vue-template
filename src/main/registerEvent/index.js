@@ -1,17 +1,22 @@
 const { ipcMain } = require('electron');
-const { mainWindowChild } = require('../createWindow');
+const { createChildWin } = require('../createWindow');
+const path = require('path');
 
 class addEvent {
 	constructor(win){
 		this.win = win;
-		this.openChildWindow();
+		this.openChildWin();
 	}
-	openChildWindow(){
+	openChildWin(){
 		ipcMain.on('open-child-window', ()=>{
-			let child = mainWindowChild({
-				// parent: this.win
+			let child = createChildWin({
+				parent: this.win
 			});
-			child.loadURL("http://www.baidu.com");
+
+			let pathName = path.join(__dirname, '../../pages/html/update.html');
+			child.loadFile(pathName);
+
+			// child.loadURL("http://www.baidu.com");
 			child.on('closed',()=>{
 				console.log('child is closed');
 				child = null;

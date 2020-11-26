@@ -2,7 +2,7 @@ const url = require("url");
 const path = require("path");
 const Shortcut = require('./shortcut');
 const electron = require('electron');
-const { mianWindow } = require('./createWindow');
+const { createMianWin } = require('./createWindow');
 const RegisterEvent = require('./registerEvent');
 
 class App {
@@ -28,7 +28,7 @@ class App {
 		})
 	}
 	createWindow(){
-		this.win = mianWindow();
+		this.win = createMianWin();
 		this.mode === 'production';
 		let filePath = this.mode === 'production'
 			? url.pathToFileURL(path.join(__dirname, 'index.html')).href

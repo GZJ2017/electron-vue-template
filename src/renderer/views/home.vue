@@ -1,7 +1,7 @@
 <template>
 <div class="home">
 	<h1>this is vue page {{txt}}</h1>
-	<!-- <head-nav /> -->
+	<head-nav />
 	<!-- <a href="https://www.github.com">GitHub</a> -->
 	<Button @click="openWin">打开新的子窗口</Button>
 	<Button @click="alert">弹窗按钮</Button>
@@ -15,7 +15,7 @@ export default {
 	name: 'home',
 	data(){
 		return {
-			txt: "hello electron123"
+			txt: "hello electron"
 		}
 	},
 	components: {

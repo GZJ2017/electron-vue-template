@@ -1,7 +1,7 @@
 const { BrowserWindow, dialog } = require('electron');
 
 module.exports = {
-	mianWindow(options = {}){
+	createMianWin(options = {}){
 		options = Object.assign({
 			width: 1200,
 			height: 800,
@@ -14,11 +14,11 @@ module.exports = {
 		}, options);
 		return new BrowserWindow(options);
 	},
-	mainWindowChild(options ={}){
+	createChildWin(options ={}){
 		options = Object.assign({
 			width: 500,
 			height: 500,
-			// modal: true,
+			modal: true,
 			webPreferences: {
 				nodeIntegration: true//默认是false
 			}

@@ -11,10 +11,25 @@
 
 
 
-## 功能
+### 功能
 1. 热加载开发
 2. 打包生成App
 
+### 项目目录结构
+
+|—— app
+|—— pack
+|—— builder
+|—— config
+|—— src
+|	 |—— main
+|	 |—— pages
+|	 |—— renderer	
+|—— .babelrc
+|—— .gitignore
+|—— package-lock.json
+|—— package.json
+|—— README.md
 
 
 SourceMap: 配置参考地址：
