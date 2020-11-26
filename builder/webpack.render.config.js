@@ -117,12 +117,13 @@ module.exports = {
 				from: path.join(__dirname, '../src/renderer/assets'),
 				to: path.join(__dirname, '../app/assets'),
 				transform(content, path){ // 将复制的css和js进行压缩
-					if(/\.css$/.test(path)){
-						return uglifycss.processFiles([path]);
-					}
-					if(/\.js$/.test(path)){
-						return UglifyJS.minify(content.toString()).code;
-					}
+					// if(/\.css$/.test(path)){
+					// 	return uglifycss.processFiles([path]);
+					// }
+					// if(/\.js$/.test(path)){
+					// 	return UglifyJS.minify(content.toString()).code;
+					// }
+					return content;
 				}
 			}, {
 				from: path.join(__dirname, '../src/pages'),
