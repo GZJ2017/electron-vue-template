@@ -6,6 +6,7 @@ module.exports = {
 			width: 1200,
 			height: 800,
 			autoHideMenuBar:true,
+			backgroundColor: '#fff',
 			show: false,
 			// frame: false,
 			webPreferences:{
@@ -18,7 +19,7 @@ module.exports = {
 		options = Object.assign({
 			width: 500,
 			height: 500,
-			modal: true,
+			// modal: true,
 			webPreferences: {
 				nodeIntegration: true//默认是false
 			}

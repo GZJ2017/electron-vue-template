@@ -5,8 +5,6 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
-const UglifyJS = require('uglify-es');
-const uglifycss = require('uglifycss');
 
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
@@ -115,16 +113,7 @@ module.exports = {
 		new CopyPlugin({ // 复制静态文件
 			patterns: [{
 				from: path.join(__dirname, '../src/renderer/assets'),
-				to: path.join(__dirname, '../app/assets'),
-				transform(content, path){ // 将复制的css和js进行压缩
-					// if(/\.css$/.test(path)){
-					// 	return uglifycss.processFiles([path]);
-					// }
-					// if(/\.js$/.test(path)){
-					// 	return UglifyJS.minify(content.toString()).code;
-					// }
-					return content;
-				}
+				to: path.join(__dirname, '../app/assets')
 			}, {
 				from: path.join(__dirname, '../src/pages'),
 				to: path.join(__dirname, '../app/pages')

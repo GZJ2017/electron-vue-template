@@ -1,6 +1,6 @@
 <template>
 <div class="home">
-	<h1>this is vue page {{txt}}</h1>
+	<h1>{{txt}}</h1>
 	<head-nav />
 	<!-- <a href="https://www.github.com">GitHub</a> -->
 	<Button @click="openWin">打开新的子窗口</Button>

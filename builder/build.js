@@ -65,7 +65,6 @@ const build = {
 	},
 	buildApp(){
 		Promise.all([this.viewBuilder()]).then(async resolve => {
-			resolve.forEach(res=> console.log('打包输出===>', res));
 			let outpath = path.join(__dirname, '../pack/');
 			// 创建一个pack目录
 			await this.createFolder(outpath);
@@ -81,17 +80,15 @@ const build = {
 				}
 			});
 		}).catch(err=>{
-			console.log('打包 view 出错===>', err);
+			console.log('打包view出错==>', err);
 			process.exit(1);
 		})
 	},
 	packMain(){
 		Promise.all([this.mainBuild()]).then(resolve=>{
-			resolve.forEach(res => console.log('打包输出===>', res));
 			packageJson.version = this.setup.version.slice(0,3).join('.');
 			fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
 			electronBuilder.build().then(()=>{
-				del(['./pack/*.yaml', './pack/*.yml', './pack/.blockmap']);
 				this.openExplorer();
 			}).catch(error=>{
 				console.log(error);
@@ -104,9 +101,7 @@ const build = {
 	compress(filePath, zipPath, level = 9, callback){
 		const outpath = fs.createWriteStream(zipPath);
 		const archive = archiver('zip', {
-			zlib: {
-				level
-			}
+			zlib: { level }
 		});
 		archive.pipe(outpath);
 		archive.directory(filePath, false);
@@ -117,7 +112,6 @@ const build = {
 			let size = archive.pointer();
 			if(callback) callback('success', size);
 		});
-
 		archive.finalize();
 	},
 	// 打开文件管理器
@@ -140,7 +134,6 @@ const build = {
 	},
 	viewBuilder(){
 		return new Promise((resolve, reject)=>{
-			console.log("打包渲染进程");
 			const renderCompiler = webpack(renderConfig);
 			renderCompiler.run((err, stats)=>{
 				if(err){
@@ -155,9 +148,6 @@ const build = {
 	},
 	mainBuild(){
 		return new Promise((resolve, reject)=>{
-			console.log('打包App主进程');
-			let log = '';
-			del(['./app/main.js']);
 			const mainRenderCompiler = webpack(mainRenderConfig);
 			mainRenderCompiler.run((err,stats)=>{
 				if(err){
