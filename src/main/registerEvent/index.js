@@ -7,6 +7,7 @@ class addEvent {
 	constructor(win){
 		this.win = win;
 		this.openChildWin();
+		this.child = null;
 	}
 	getPath(file){
 		let url = process.env.NODE_ENV === 'development'
@@ -15,14 +16,17 @@ class addEvent {
 	}
 	openChildWin(){
 		ipcMain.on('open-child-window', ()=>{
-			let child = createChildWin({
+			if(this.child){
+				return this.child.show();
+			}
+			this.child = createChildWin({
 				// parent: this.win
 			});
 			let filePath = url.pathToFileURL(this.getPath('update.html')).href;
-			child.loadURL(filePath);
-			child.on('closed',()=>{
+			this.child.loadURL(filePath);
+			this.child.on('closed',()=>{
+				this.child = null;
 				console.log('child is closed');
-				child = null;
 			})
 		})
 	}

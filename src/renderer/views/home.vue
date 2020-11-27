@@ -5,6 +5,7 @@
 	<!-- <a href="https://www.github.com">GitHub</a> -->
 	<Button @click="openWin">打开新的子窗口</Button>
 	<Button @click="alert">弹窗按钮</Button>
+	<Button @click="notice">显示通知</Button>
 </div>
 </template>
 
@@ -35,6 +36,15 @@ export default {
 		},
 		alert(){
 			alert('hello electron');
+		},
+		notice(){
+			const myNotification = new Notification('Basic Notification', {
+				body: 'Notification from the Renderer process'
+			})
+
+			myNotification.onclick = () => {
+			  console.log('Notification clicked')
+			}
 		}
 	}
 }
