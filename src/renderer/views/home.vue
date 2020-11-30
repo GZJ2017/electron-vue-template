@@ -16,7 +16,7 @@ export default {
 	name: 'home',
 	data(){
 		return {
-			txt: "hello electron"
+			txt: "hello electron123"
 		}
 	},
 	components: {

@@ -9,6 +9,9 @@
         "dev": "node ./builder/dev.js",
         "build": "node ./builder/build.js"
     },
+    "sideEffects": [
+        "*.css"
+    ],
     "keywords": [],
     "author": "",
     "license": "ISC",

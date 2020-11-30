@@ -14,7 +14,8 @@ module.exports = {
 	output: {
 		path: path.join(__dirname, '../app/'),
 		publicPath: isDevMode ? '/': '',
-		filename: 'js/[name].[contenthash].js'
+		filename: 'js/[name].[contenthash].js',
+		chunkFilename: 'js/[name].bundle.js',
 	},
 	module: {
 		rules: [{
