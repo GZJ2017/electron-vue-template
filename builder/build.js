@@ -36,7 +36,7 @@ const build = {
 		}
 		setup.versionName = runTimeObj.release;
 		setup.publishTime = Date.now();
-		Object.keys(runTimeObj).forEach(key=>{
+		Object.keys(runTimeObj).forEach(key => {
 			if(process.argv.indexOf(key) > 1){
 				setup.versionType = key;
 				setup.versionName = runTimeObj[key];
@@ -53,18 +53,20 @@ const build = {
 	},
 	writeVersionConfig(){
 		fs.writeFileSync(path.join(__dirname, '../config/version.js'), `module.exports = ${JSON.stringify(this.setup, null, 4)}`);
+		packageJson.version = this.setup.version.slice(0,3).join('.');
+		fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
 	},
 	// 创建文件夹，如果文件夹已存在则什么都不做
 	async createFolder(outpath){
-		return new Promise(resolve=>{
-			fs.exists(outpath, exists=>{
+		return new Promise(resolve => {
+			fs.exists(outpath, exists => {
 				if(!exists) fs.mkdirSync(outpath);
 				resolve(1);
 			});
 		})
 	},
 	buildApp(){
-		Promise.all([this.viewBuilder()]).then(async resolve => {
+		this.viewBuilder().then(async () => {
 			let outpath = path.join(__dirname, '../pack/');
 			// 创建一个pack目录
 			await this.createFolder(outpath);
@@ -73,28 +75,24 @@ const build = {
 			let filePath = path.join(zipPath, `../pack/${fileName}.zip`);
 			this.compress(zipPath, filePath, 7, (type, msg)=>{
 				if(type === 'error'){
-					Promise.reject('压缩文件出错：'+ msg);
+					return Promise.reject('压缩文件出错：'+ msg);
 				} else {
 					this.packMain();
-					console.log(`压缩包大小为：${(msg/ 1024/ 1024).toFixed(2)}MB`);
+					console.log(`压缩包大小为：${(msg/1024/1024).toFixed(2)}MB`);
 				}
 			});
 		}).catch(err=>{
-			console.log('打包view出错==>', err);
+			console.log(err);
 			process.exit(1);
 		})
 	},
 	packMain(){
-		Promise.all([this.mainBuild()]).then(resolve=>{
-			packageJson.version = this.setup.version.slice(0,3).join('.');
-			fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
-			electronBuilder.build().then(()=>{
-				this.openExplorer();
-			}).catch(error=>{
+		this.mainBuild().then(()=>{
+			electronBuilder.build().then(() => this.openExplorer()).catch(error => {
 				console.log(error);
 			})
 		}).catch(err=>{
-			console.log("打包main错误==>", err);
+			console.log(err);
 			process.exit(2);
 		})
 	},
@@ -116,7 +114,7 @@ const build = {
 	},
 	// 打开文件管理器
 	openExplorer() {
-		const dirPath = path.join(__dirname, '..', 'pack');
+		const dirPath = path.join(__dirname, '../pack/');
 		if (process.platform === 'darwin') {
 			spawn('open', [dirPath]);
 		} else if (process.platform === 'win32') {
@@ -125,22 +123,14 @@ const build = {
 			spawn('nautilus', [dirPath]);
 		}
 	},
-	logHandle(stats) {
-		const compilation = stats.compilation;
-		Object.keys(compilation.assets).forEach(key => console.log('\n' + chalk.blue(key)));
-		compilation.warnings.forEach(key => console.log('\n' + chalk.yellow(key)));
-		compilation.errors.forEach(key => console.log('\n' + chalk.red(`${key}:${stats.compilation.errors[key]}`)));
-		console.log('\n' + chalk.green(`time:${(stats.endTime-stats.startTime)/1000} s`));
-	},
 	viewBuilder(){
-		return new Promise((resolve, reject)=>{
+		return new Promise((resolve, reject) => {
 			const renderCompiler = webpack(renderConfig);
-			renderCompiler.run((err, stats)=>{
+			renderCompiler.run(err => {
 				if(err){
-					console.log("打包渲染进程Error");
-					reject(chalk.red(err));
+					reject(chalk.red("打包渲染进程:" + err));
 				} else {
-					this.logHandle(stats);
+					console.log('打包渲染进程完毕！');
 					resolve();
 				}
 			})
@@ -149,12 +139,10 @@ const build = {
 	mainBuild(){
 		return new Promise((resolve, reject)=>{
 			const mainRenderCompiler = webpack(mainRenderConfig);
-			mainRenderCompiler.run((err,stats)=>{
+			mainRenderCompiler.run(err => {
 				if(err){
-					console.log('打包主进程出错');
-					reject(chalk.red(err));
+					reject(chalk.red('打包主进程出错' + err));
 				} else {
-					this.logHandle(stats);
 	                console.log('打包主进程完毕！');
 	                resolve();
 				}

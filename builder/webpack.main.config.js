@@ -26,7 +26,6 @@ module.exports = {
 		filename: '[name].js'
 	},
 	watch: isDevMode,
-	devtool: isDevMode ? 'cheap-eval-source-map' : 'source-map',
 	optimization: {
 		minimize: true
 	},
