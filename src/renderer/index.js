@@ -13,6 +13,13 @@ Vue.component('Table', Table);
 
 Vue.prototype.$event = event;
 
+// 定义环境变量
+window.env = {
+	NODE_ENV,	// node环境
+	MODE,		// 所处环境
+	VERSION, 	// 当前版本
+};
+
 let app = new Vue({
 	store,
 	router,

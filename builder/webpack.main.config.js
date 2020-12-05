@@ -1,9 +1,17 @@
-
+/*
+ * @Author: your name
+ * @Date: 2020-10-22 20:16:53
+ * @LastEditTime: 2020-12-05 20:18:41
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \electron-vue-template\builder\webpack.main.config.js
+ */
 const path = require('path');
 const webpack = require('webpack');
 const { dependencies } = require('../package.json');
 const ElectronDevWebpackPlugin = require('electron-dev-webpack-plugin');
 const isDevMode = process.env.NODE_ENV === 'development';
+const { params } = require('./common.config');
 
 const plugins = [
 	new webpack.NoEmitOnErrorsPlugin(),
@@ -26,7 +34,6 @@ module.exports = {
 		filename: '[name].js'
 	},
 	watch: isDevMode,
-	devtool: isDevMode ? 'cheap-module-source-map': 'source-map',
 	optimization: {
 		minimize: true
 	},
