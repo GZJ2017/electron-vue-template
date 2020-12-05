@@ -1,9 +1,9 @@
-
 const path = require('path');
 const webpack = require('webpack');
 const { dependencies } = require('../package.json');
 const ElectronDevWebpackPlugin = require('electron-dev-webpack-plugin');
 const isDevMode = process.env.NODE_ENV === 'development';
+const { params } = require('./common.config');
 
 const plugins = [
 	new webpack.NoEmitOnErrorsPlugin(),

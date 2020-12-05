@@ -5,9 +5,16 @@
     "main": "./app/main.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "webpack --config ./builder/webpack.render.config.js",
         "dev": "node ./builder/dev.js",
-        "build": "node ./builder/build.js"
+        "build": "node ./builder/build.js",
+        "test-serve": "node ./builder/dev.js mode=test",
+        "pro-serve": "node ./builder/dev.js mode=pro",
+        "dev-serve": "node ./builder/dev.js mode=dev",
+        "exp-serve": "node ./builder/dev.js mode=exp",
+        "test-build": "node ./builder/build.js mode=test",
+        "pro-build": "node ./builder/build.js mode=pro",
+        "exp-build": "node ./builder/build.js mode=exp",
+        "dev-build": "node ./builder/build.js mode=dev"
     },
     "sideEffects": [
         "*.css"

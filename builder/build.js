@@ -35,7 +35,7 @@ const build = {
 			release: '正式版'
 		}
 		setup.versionName = runTimeObj.release;
-		setup.publishTime = Date.now();
+		setup.publishTime = new Date().toLocaleString();
 		Object.keys(runTimeObj).forEach(key => {
 			if(process.argv.indexOf(key) > 1){
 				setup.versionType = key;

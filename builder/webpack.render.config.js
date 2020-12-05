@@ -1,10 +1,13 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const isDevMode = process.env.NODE_ENV === 'development';
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { params } = require('./common.config');
+const { version } = require('../config/version');
 
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
@@ -119,6 +122,11 @@ module.exports = {
 				from: path.join(__dirname, '../src/pages'),
 				to: path.join(__dirname, '../app/pages')
 			}]
+		}),
+		new webpack.DefinePlugin({
+			VERSION: JSON.stringify(version.join('.')),		// 版本号
+			MODE: JSON.stringify(params.mode),				// 运行的环境
+			NODE_ENV: JSON.stringify(process.env.NODE_ENV)  // node环境
 		})
 	],
 	target: 'electron-renderer',
