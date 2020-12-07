@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-10-24 20:29:25
+ * @LastEditTime: 2020-12-06 15:06:08
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \electron-vue-template\src\main\createWindow\index.js
+ */
 const { BrowserWindow, dialog } = require('electron');
 
 module.exports = {
@@ -15,20 +23,20 @@ module.exports = {
 		}, options);
 		return new BrowserWindow(options);
 	},
-	createChildWin(options = {}){
+	createInitiateWin(options = {}){
 		options = Object.assign({
-			width: 500,
-			height: 500,
+			width: 1200,
+			height: 800,
 			webPreferences: {
-				nodeIntegration: true//默认是false
+				nodeIntegration: true //默认是false
 			}
 		},options);
 		return new BrowserWindow(options);
 	},
-	createVideoWin(options = {}){
+	createViewWin(options = {}){
 		options = Object.assign({
-			width: 500,
-			height: 500,
+			width: 1200,
+			height: 800,
 			webPreferences: {
 				nodeIntegration: true
 			}

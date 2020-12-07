@@ -1,16 +1,29 @@
+/*
+ * @Author: your name
+ * @Date: 2020-11-26 19:38:27
+ * @LastEditTime: 2020-12-06 18:02:55
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \electron-vue-template\src\pages\js\update.js
+ */
 const { desktopCapturer } = require('electron');
 
 const video = document.querySelector('#move');
-const video2 = document.querySelector('#video');
 const startBtn = document.querySelector('.start');
 const pauseBtn = document.querySelector('.pause');
 const stopBtn = document.querySelector('.stop');
 
+// 连接远程服务器
+var client = new WebSocket('ws://192.168.30.1:8088');
 
-let chunks = [];
-let sourceBuffer = null;
-let mediaSource = new MediaSource();
+	// 当客户端连接成功之后就会触发open事件
+client.onopen = ()=>{
+    console.log("客户端连接成功");
+}
 
+client.onmessage = function(ev){
+  console.log('my:', ev);
+}
 
 desktopCapturer.getSources({ types: ['window', 'screen'] }).then(async sources => {
   for (const source of sources) {
@@ -22,7 +35,7 @@ desktopCapturer.getSources({ types: ['window', 'screen'] }).then(async sources =
           // 	mandatory: {
           // 		chromeMediaSource: 'desktop'
           // 	}
-          // }
+          // },
           video: {
             mandatory: {
               chromeMediaSource: 'desktop',
@@ -56,47 +69,43 @@ function handleError (e) {
 
 
 function createRecorder(stream){
-	let recorder = new MediaRecorder(stream);
+	let recorder = new MediaRecorder(stream, {
+    audioBitsPerSecond: 10000,
+    videoBitsPerSecond: 25000,
+    mimeType: 'video/webm; codecs=vp9'  
+  });
 	startBtn.onclick = ()=>{
 		recorder.start(1000);
-	}
+  }
+  pauseBtn.onclick = ()=>{
+    
+    if(recorder.state === 'paused'){
+      recorder.resume();
+    } 
+    else if(recorder.state === 'recording'){
+      recorder.pause();
+    }
+    console.log(recorder)
+  }
 	stopBtn.onclick = ()=>{
 		recorder.stop();
-		playVideo();
+		// playVideo();
 	}
 	recorder.ondataavailable = event =>{
-		chunks.push(event.data);
-		event.data.arrayBuffer().then(res=>console.log(res));
+    client.send(event.data);
 	}
 	recorder.onerror = e =>{
 		console.log(e);
-	}
+  }
+  recorder.onresume = e=>{
+    console.log("恢复录制了");
+  }
+  recorder.onpause = e=>{
+    console.log("暂停录制")
+  }
+  recorder.onstart = e=>{
+    console.log("开始录制")
+  }
 }
 
 
-
-function playVideo(){
-	video2.src = URL.createObjectURL(mediaSource);
-	mediaSource.addEventListener('sourceopen', sourceopen);
-}
-
-
-
-async function sourceopen(e){
-	URL.revokeObjectURL(video2.src);
-    var mime = 'video/webm;codecs=vp8';
-    // var mediaSource = e.target;
-    sourceBuffer = mediaSource.addSourceBuffer(mime);
-    console.log(sourceBuffer);
-	for(let i = 0; i<chunks.length; i++){
-		await new Promise((resolve, reject)=>{
-	    	setTimeout(()=>{
-		    	sourceBuffer.appendBuffer(chunks[i]);
-		    	// chunks[i].arrayBuffer().then(res=>{
-		    	// 	console.log(11111)
-		    	// 	resolve();
-		    	// })
-	    	}, 1500)
-		})
-	}
-}

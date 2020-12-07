@@ -1,9 +1,18 @@
+/*
+ * @Author: your name
+ * @Date: 2020-10-21 22:08:16
+ * @LastEditTime: 2020-12-06 15:49:17
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \electron-vue-template\src\main\main.js
+ */
 const url = require("url");
 const path = require("path");
 const Shortcut = require('./shortcut');
 const electron = require('electron');
 const { createMianWin } = require('./createWindow');
 const RegisterEvent = require('./registerEvent');
+const CreateSocket = require('./socket');
 
 class App {
 	constructor({app, BrowserWindow}){
@@ -54,8 +63,10 @@ class App {
 	}
 	ready(){
 		this.createWindow(); 			// 创建主窗口
+		new CreateSocket().init();		// 创建socket
 		new Shortcut(this.win);			// 设置快捷键
 		this.registerEvent(this.win);	// 注册事件
+		
 	}
 	closed(){
 		this.win = null;

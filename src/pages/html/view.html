@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>观看视频</title>
+</head>
+<body>
+	<video id="vid" controls></video>
+	<script>
+		// 连接远程服务器
+	const client = new WebSocket('ws://192.168.30.1:8088');
+	let queue = [];
+	let sourceBuffer = null;
+	let mediaSource = new MediaSource();
+	let vid = document.querySelector('#vid');
+
+
+	// 当客户端连接成功之后就会触发open事件
+	client.onopen = function(){
+		console.log("客户端连接成功");
+		playVideo();
+		// data.state = 0;
+		// 把对象转换为json字符串
+		// console.log(JSON.stringify(data));
+
+		// 发送data给后端
+		// client.send(JSON.stringify(data));
+	}
+	
+	let start = true;
+	let five = false;
+
+	client.onmessage = function(ev){
+		console.log(ev);
+		// 将视频数据装在一个数组中
+		queue.push(ev.data);
+
+		// if(start){
+		// 	start = false;
+		// 	setTimeout(()=>{
+		// 		console.log(queue);
+		// 		playVideo();
+		// 		five = true;
+		// 	}, 5000)
+		// }
+		// if(five){
+			queue.shift().arrayBuffer().then(res=>{
+				sourceBuffer.appendBuffer(res);
+			})
+		// }
+	}
+
+
+	
+	
+function playVideo(){
+	vid.src = URL.createObjectURL(mediaSource);
+  	mediaSource.addEventListener('sourceopen', sourceopen);
+  	mediaSource.addEventListener('sourceopen', function(e) { console.log('sourceopen: ' + mediaSource.readyState); });
+  	mediaSource.addEventListener('sourceended', function(e) { console.log('sourceended: ' + mediaSource.readyState); });
+  	mediaSource.addEventListener('sourceclose', function(e) { console.log('sourceclose: ' + mediaSource.readyState); });
+  	mediaSource.addEventListener('error', function(e) { console.log('error: ' + mediaSource.readyState); });
+}
+
+
+
+function sourceopen(e){
+	  URL.revokeObjectURL(vid.src);
+    // var mime = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+    var mime = 'video/webm;codecs=vp9';
+    // vid.play();
+	sourceBuffer = mediaSource.addSourceBuffer(mime);
+	// queue.shift().arrayBuffer().then(res=>{
+	// 	sourceBuffer.appendBuffer(res);
+	// 	console.log(queue.length, sourceBuffer)
+	// })
+    sourceBuffer.addEventListener('updatestart', function(e) { console.log('updatestart: ' + mediaSource.readyState); });
+    sourceBuffer.addEventListener('update', function(e) { console.log('update: ' + mediaSource.readyState); });
+    sourceBuffer.addEventListener('updateend', function(e) { console.log('updateend: ' + mediaSource.readyState); });
+    sourceBuffer.addEventListener('error', function(e) {
+		// sourceBuffer.abort();
+		console.log('error: ' + mediaSource.readyState); 
+	});
+    sourceBuffer.addEventListener('abort', function(e) { console.log('abort: ' + mediaSource.readyState); });
+
+
+    sourceBuffer.addEventListener('update', function() { // Note: Have tried 'updateend'
+      if (queue.length > 0 && !sourceBuffer.updating) {
+        queue.shift().arrayBuffer().then(res=>{
+          sourceBuffer.appendBuffer(res);
+          console.log(queue.length, sourceBuffer)
+        })
+      }
+    });
+}
+	</script>
+</body>
+</html>

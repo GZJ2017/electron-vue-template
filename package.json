@@ -57,12 +57,15 @@
         "view-design": "^4.4.0",
         "vue": "^2.6.12",
         "vue-router": "^3.4.7",
-        "vuex": "^3.5.1"
+        "vuex": "^3.5.1",
+        "ws": "^7.4.1"
     },
-    "publish": [{
-        "provider": "generic",
-        "url": "http://localhost:9090"
-    }],
+    "publish": [
+        {
+            "provider": "generic",
+            "url": "http://localhost:9090"
+        }
+    ],
     "build": {
         "asar": true,
         "productName": "Electron+vue",

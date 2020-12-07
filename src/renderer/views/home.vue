@@ -1,18 +1,16 @@
 <!--
  * @Author: your name
  * @Date: 2020-10-21 22:30:22
- * @LastEditTime: 2020-12-05 20:19:02
+ * @LastEditTime: 2020-12-06 15:10:44
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\renderer\views\home.vue
 -->
 <template>
 <div class="home">
-	<!-- <head-nav /> -->
-	<!-- <a href="https://www.github.com">GitHub</a> -->
-	<input type="text" @copy="copyHandle" @paste="pasteHandle">
-	<Button @click="openWin">打开新的子窗口</Button>
-	<Button @click="alert">弹窗按钮</Button>
+	<!-- <input type="text" @copy="copyHandle" @paste="pasteHandle"> -->
+	<Button @click="openInitiate">发起屏幕共享</Button>
+	<Button @click="openView">观看屏幕分享</Button>
 	<Button @click="notice">显示通知</Button>
 </div>
 </template>
@@ -39,8 +37,11 @@ export default {
 		console.log(this.userInfo);
 	},
 	methods: {
-		openWin(){
-			this.$event.openChildWindow();
+		openInitiate(){
+			this.$ev.openInitiateWin();
+		},
+		openView(){
+			this.$ev.openViewWin();
 		},
 		alert(){
 			console.log(window.env);
