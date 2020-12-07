@@ -59,6 +59,10 @@
         "vue-router": "^3.4.7",
         "vuex": "^3.5.1"
     },
+    "publish": [{
+        "provider": "generic",
+        "url": "http://localhost:9090"
+    }],
     "build": {
         "asar": true,
         "productName": "Electron+vue",
@@ -96,10 +100,11 @@
                 }
             ],
             "artifactName": "${productName}.${ext}",
-            "icon": "main/favicon/favicon.ico"
+            "icon": "src/main/favicon/favicon.ico"
         },
         "nsis": {
             "oneClick": false,
+            "createDesktopShortcut": "always",
             "allowToChangeInstallationDirectory": true,
             "perMachine": true,
             "allowElevation": true,
