@@ -56,17 +56,20 @@ function handleError (e) {
 
 
 function createRecorder(stream){
-	let recorder = new MediaRecorder(stream);
+	let recorder = new MediaRecorder(stream, {
+		mimeType: 'video/webm;codecs=vp8'
+	});
 	startBtn.onclick = ()=>{
 		recorder.start(1000);
 	}
 	stopBtn.onclick = ()=>{
 		recorder.stop();
-		playVideo();
+		// playVideo();
 	}
 	recorder.ondataavailable = event =>{
-		chunks.push(event.data);
-		event.data.arrayBuffer().then(res=>console.log(res));
+		chunks.push(event.data, event.data.size);
+		let s = new Blob([event.data, '{"post": "hello"}']);
+		console.log(s);
 	}
 	recorder.onerror = e =>{
 		console.log(e);
@@ -85,18 +88,19 @@ function playVideo(){
 async function sourceopen(e){
 	URL.revokeObjectURL(video2.src);
     var mime = 'video/webm;codecs=vp8';
-    // var mediaSource = e.target;
     sourceBuffer = mediaSource.addSourceBuffer(mime);
-    console.log(sourceBuffer);
 	for(let i = 0; i<chunks.length; i++){
 		await new Promise((resolve, reject)=>{
 	    	setTimeout(()=>{
-		    	sourceBuffer.appendBuffer(chunks[i]);
-		    	// chunks[i].arrayBuffer().then(res=>{
-		    	// 	console.log(11111)
-		    	// 	resolve();
-		    	// })
-	    	}, 1500)
+	    		if(i == 1 || i == 2){
+	    			return resolve();
+	    		}
+		    	chunks[i].arrayBuffer().then(res=>{
+		    	sourceBuffer.appendBuffer(res);
+		    		console.log('第'+i+ '段')
+		    		resolve();
+		    	})
+	    	}, 500)
 		})
 	}
 }
