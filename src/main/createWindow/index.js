@@ -24,15 +24,5 @@ module.exports = {
 			}
 		},options);
 		return new BrowserWindow(options);
-	},
-	createVideoWin(options = {}){
-		options = Object.assign({
-			width: 500,
-			height: 500,
-			webPreferences: {
-				nodeIntegration: true
-			}
-		}, options);
-		return new BrowserWindow(options);
 	}
 }

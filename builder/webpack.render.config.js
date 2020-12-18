@@ -8,6 +8,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { params } = require('./common.config');
 const { version } = require('../config/version');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
@@ -116,12 +117,36 @@ module.exports = {
 		}),
 		new CopyPlugin({ // 复制静态文件
 			patterns: [{
-				from: path.join(__dirname, '../src/renderer/assets'),
-				to: path.join(__dirname, '../app/assets')
+				from: path.join(__dirname, '../src/static/'),
+				to: path.join(__dirname, '../app/static')
 			}, {
 				from: path.join(__dirname, '../src/pages'),
 				to: path.join(__dirname, '../app/pages')
 			}]
+		}),
+		// new BundleAnalyzerPlugin({ analyzerPort: 8888 }), // chunks 分析插件
+		new webpack.optimize.SplitChunksPlugin({
+			cacheGroups: {
+				default: {
+					minChunks: 2,
+					priority: -20,
+					reuseExistingChunk: true
+				},
+				// 打包重复出现的代码
+				vendor: {
+					name: 'vendor',
+					chunks: 'initial',
+					minChunks: 2,
+					maxInitialRequests: 5,
+					minSize: 0
+				},
+				// 打包第三方类库
+				commons: {
+					name: 'commons',
+					chunks: 'initial',
+					minChunks: Infinity
+				}
+			}
 		}),
 		new webpack.DefinePlugin({
 			VERSION: JSON.stringify(version.join('.')),		// 版本号

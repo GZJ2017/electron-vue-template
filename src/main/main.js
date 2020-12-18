@@ -32,7 +32,7 @@ class App {
 		this.mode === 'production';
 		let filePath = this.mode === 'production'
 			? url.pathToFileURL(path.join(__dirname, 'index.html')).href
-			: "http://localhost:8090/";
+			: "http://localhost:8090";
 		this.win.loadURL(filePath);
 		// 等待渲染进程页面加载完毕再显示窗口
 		this.win.once('ready-to-show', () => this.win.show())
