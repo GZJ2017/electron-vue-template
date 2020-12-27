@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-11-26 19:38:27
- * @LastEditTime: 2020-12-06 18:02:55
+ * @LastEditTime: 2020-12-08 00:25:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\pages\js\update.js
@@ -70,10 +70,8 @@ function handleError (e) {
 
 function createRecorder(stream){
 	let recorder = new MediaRecorder(stream, {
-    audioBitsPerSecond: 10000,
-    videoBitsPerSecond: 25000,
-    mimeType: 'video/webm; codecs=vp9'  
-  });
+		mimeType: 'video/webm;codecs=vp8'
+	});
 	startBtn.onclick = ()=>{
 		recorder.start(1000);
   }
@@ -109,3 +107,23 @@ function createRecorder(stream){
 }
 
 
+
+async function sourceopen(e){
+	URL.revokeObjectURL(video2.src);
+    var mime = 'video/webm;codecs=vp8';
+    sourceBuffer = mediaSource.addSourceBuffer(mime);
+	for(let i = 0; i<chunks.length; i++){
+		await new Promise((resolve, reject)=>{
+	    	setTimeout(()=>{
+	    		if(i == 1 || i == 2){
+	    			return resolve();
+	    		}
+		    	chunks[i].arrayBuffer().then(res=>{
+		    	sourceBuffer.appendBuffer(res);
+		    		console.log('第'+i+ '段')
+		    		resolve();
+		    	})
+	    	}, 500)
+		})
+	}
+}

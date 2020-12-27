@@ -17,7 +17,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import headNav from '@/components/head';
+import headNav from "@/components/head";
 export default {
 	name: 'home',
 	data(){
