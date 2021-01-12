@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-10-21 22:08:16
- * @LastEditTime: 2020-12-06 15:49:17
+ * @LastEditTime: 2020-12-27 11:50:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\main\main.js
@@ -41,7 +41,7 @@ class App {
 		this.mode === 'production';
 		let filePath = this.mode === 'production'
 			? url.pathToFileURL(path.join(__dirname, 'index.html')).href
-			: "http://localhost:8090/";
+			: "http://localhost:8090";
 		this.win.loadURL(filePath);
 		// 等待渲染进程页面加载完毕再显示窗口
 		this.win.once('ready-to-show', () => this.win.show())

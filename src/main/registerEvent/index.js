@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-10-26 21:22:49
- * @LastEditTime: 2020-12-06 15:14:14
+ * @LastEditTime: 2020-12-27 12:17:35
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\main\registerEvent\index.js
@@ -10,12 +10,14 @@ const { ipcMain } = require('electron');
 const { createInitiateWin, createViewWin } = require('../createWindow');
 const path = require('path');
 const url = require('url');
+const updateHandle = require('./update');
 
 class addEvent {
 	constructor(win){
 		this.win = win;
 		this.openInitiateWin();
 		this.openViewWin();
+		this.updateApp();
 		this.initiate = null;
 		this.view = null;
 	}
@@ -51,6 +53,9 @@ class addEvent {
 				console.log('view is closed');
 			})
 		})
+	}
+	updateApp(){
+		updateHandle(this.win);
 	}
 }
 

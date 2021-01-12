@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-10-24 20:29:25
- * @LastEditTime: 2020-12-06 15:06:08
+ * @LastEditTime: 2020-12-27 09:41:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\main\createWindow\index.js
@@ -31,16 +31,6 @@ module.exports = {
 				nodeIntegration: true //默认是false
 			}
 		},options);
-		return new BrowserWindow(options);
-	},
-	createViewWin(options = {}){
-		options = Object.assign({
-			width: 1200,
-			height: 800,
-			webPreferences: {
-				nodeIntegration: true
-			}
-		}, options);
 		return new BrowserWindow(options);
 	}
 }
