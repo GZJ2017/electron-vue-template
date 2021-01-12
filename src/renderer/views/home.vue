@@ -12,6 +12,8 @@
 	<Button @click="openInitiate">打开一个新的窗口A</Button>
 	<Button @click="openView">打开一个新的窗口B</Button>
 	<Button @click="notice">显示通知</Button>
+	<hr>
+	<Button @click="sendA">向A窗口发出消息</Button>
 </div>
 </template>
 
@@ -42,6 +44,9 @@ export default {
 		},
 		openView(){
 			this.$ev.openViewWin();
+		},
+		sendA(){
+			this.$ev.sendAmessage({code: '2001'})
 		},
 		alert(){
 			console.log(window.env);

@@ -3,9 +3,18 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>AAAAA</title>
 </head>
 <body>
-	<h1>这是窗口B-initiate</h1>
+	<h1>这是窗口A-initiate</h1>
+	<div class="box"></div>
+	<script type="module">
+		const { ipcRenderer } = require('electron');
+		let box = document.querySelector('.box');
+		ipcRenderer.on('a-render-message', (ev, data)=>{
+			box.innerHTML=JSON.stringify(data);
+			console.log(data)
+		})
+	</script>
 </body>
 </html>

@@ -14,5 +14,8 @@ export default {
 	},
 	openViewWin(){
 		ipcRenderer.send('open-view-win');
+	},
+	sendAmessage(data = {}){
+		ipcRenderer.send("a-message", data);
 	}
 }

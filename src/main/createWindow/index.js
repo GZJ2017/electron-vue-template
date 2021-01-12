@@ -32,5 +32,15 @@ module.exports = {
 			}
 		},options);
 		return new BrowserWindow(options);
+	},
+	createViewWin(options = {}){
+		options = Object.assign({
+			width: 600,
+			height: 600,
+			webPreferences: {
+				nodeIntegration: true //默认是false
+			}
+		},options);
+		return new BrowserWindow(options);
 	}
 }
