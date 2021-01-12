@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-10-21 22:30:22
- * @LastEditTime: 2020-12-06 15:10:44
+ * @LastEditTime: 2021-01-12 20:46:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\renderer\views\home.vue
@@ -9,8 +9,8 @@
 <template>
 <div class="home">
 	<!-- <input type="text" @copy="copyHandle" @paste="pasteHandle"> -->
-	<Button @click="openInitiate">发起屏幕共享</Button>
-	<Button @click="openView">观看屏幕分享</Button>
+	<Button @click="openInitiate">打开一个新的窗口A</Button>
+	<Button @click="openView">打开一个新的窗口B</Button>
 	<Button @click="notice">显示通知</Button>
 </div>
 </template>

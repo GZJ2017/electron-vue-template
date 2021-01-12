@@ -6,7 +6,7 @@
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\main\createWindow\index.js
  */
-const { BrowserWindow, dialog } = require('electron');
+const { BrowserWindow } = require('electron');
 
 module.exports = {
 	createMianWin(options = {}){
@@ -25,8 +25,8 @@ module.exports = {
 	},
 	createInitiateWin(options = {}){
 		options = Object.assign({
-			width: 1200,
-			height: 800,
+			width: 600,
+			height: 600,
 			webPreferences: {
 				nodeIntegration: true //默认是false
 			}

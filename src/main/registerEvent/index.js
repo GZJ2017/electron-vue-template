@@ -12,6 +12,7 @@ const path = require('path');
 const url = require('url');
 const updateHandle = require('./update');
 
+console.log(1111, createInitiateWin, createViewWin);
 class addEvent {
 	constructor(win){
 		this.win = win;

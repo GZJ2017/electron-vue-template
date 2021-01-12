@@ -58,15 +58,11 @@ class App {
 	windowAllClosed(){
 		if(process.platform !== 'darwin') this.app.quit();
 	}
-	registerEvent(){
-		this.event = new RegisterEvent(this.win);
-	}
 	ready(){
-		this.createWindow(); 			// 创建主窗口
+		this.createWindow(); 				// 创建主窗口
 		new CreateSocket().init();		// 创建socket
 		new Shortcut(this.win);			// 设置快捷键
-		this.registerEvent(this.win);	// 注册事件
-		
+		new RegisterEvent(this.win);;	// 注册事件
 	}
 	closed(){
 		this.win = null;
