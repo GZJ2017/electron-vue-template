@@ -33,8 +33,8 @@ class addEvent {
 				return this.initiate.show();
 			}
 			this.initiate = createInitiateWin();
-			let filePath = url.pathToFileURL(this.getPath('initiate.html')).href;
-			this.initiate.loadURL(filePath);
+			// let filePath = url.pathToFileURL(this.getPath('initiate.html')).href;
+			this.initiate.loadURL('http://localhost/RedBlackBinaryTree.html');
 			this.initiate.on('closed',()=>{
 				this.initiate = null;
 				console.log('initiate is closed');

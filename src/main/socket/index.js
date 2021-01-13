@@ -17,12 +17,12 @@ class CreateSocket{
     init(){
         this.createSocket();
         this.addEventListen();
-        console.log('socketServer:'+this.getIPAdress()+':8088')
+        console.log('socketServer:'+this.getIPAdress()+':8089')
     }
     createSocket(){
         this.wss = new WebSocket.Server({
             host: this.getIPAdress(),
-            port: 8088
+            port: 8089
         });
     }
     // 获取电脑ip
