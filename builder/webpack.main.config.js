@@ -21,13 +21,11 @@ const plugins = [
 if(isDevMode) {
 	plugins.push(new ElectronDevWebpackPlugin())	// 开发热加载electron应用)
 }
-
 module.exports = {
 	mode: process.env.NODE_ENV,
 	entry:{
 		main: ['./src/main/main.js']
 	},
-	watch: true,
 	output: {
 		path: path.join(__dirname, '../app/'),
 		libraryTarget: 'commonjs2',
