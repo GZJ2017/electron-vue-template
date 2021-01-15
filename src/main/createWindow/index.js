@@ -18,6 +18,7 @@ module.exports = {
 			show: false,				// 创建窗口后不显示窗口
 			hasShadow: false,
 			webPreferences:{
+				// contextIsolation: true,
 				nodeIntegration: true, // 在渲染进程引入node模块
 			}
 		}, options);
@@ -28,7 +29,8 @@ module.exports = {
 			width: 600,
 			height: 600,
 			webPreferences: {
-				nodeIntegration: true //默认是false
+				// contextIsolation: true,
+				nodeIntegration: true, //默认是false
 			}
 		},options);
 		return new BrowserWindow(options);
@@ -38,7 +40,8 @@ module.exports = {
 			width: 600,
 			height: 600,
 			webPreferences: {
-				nodeIntegration: true //默认是false
+				// contextIsolation: true,
+				nodeIntegration: true, //默认是false
 			}
 		},options);
 		return new BrowserWindow(options);
