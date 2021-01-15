@@ -84,13 +84,11 @@
             "target": [
                 "dmg"
             ],
-            "artifactName": "${productName}.${ext}",
-            "icon": "main/favicon/favicon.ico"
+            "artifactName": "${productName}.${ext}"
         },
         "dmg": {
             "title": "${productName}",
-            "artifactName": "${productName}.${ext}",
-            "icon": "main/favicon/favicon.ico"
+            "artifactName": "${productName}.${ext}"
         },
         "win": {
             "legalTrademarks": "Copyright © year motou",
@@ -104,8 +102,7 @@
                     ]
                 }
             ],
-            "artifactName": "${productName}.${ext}",
-            "icon": "src/main/favicon/favicon.ico"
+            "artifactName": "${productName}.${ext}"
         },
         "nsis": {
             "oneClick": false,
