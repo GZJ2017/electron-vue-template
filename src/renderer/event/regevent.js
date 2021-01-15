@@ -8,25 +8,26 @@
  */
 
 import {ipcRenderer} from 'electron';
-
+// 在渲染进程监听 --- 主线程触发的事件
 class RegisterEvent {
     constructor(){
         this.regEvent({
-            message: 'messageEvent',
-            downloadProgress: 'downloadProgress',
-            isUpdateNow: 'isUpdateNow'
+            'update-message': this.messageEvent,
+            'download-progress': this.downloadProgress,
+            isUpdateNow: this.isUpdateNow,
         });
     }
     regEvent(events){
         for(let ev in events){
-            ipcRenderer.on(ev, this[events[ev]])
+            ipcRenderer.on(ev,events[ev])
         }
     }
+    // 检查跟新
     messageEvent(event, text){
-        console.log(text);
+        console.log("检查跟新：", text);
     }
     downloadProgress(event, progress){
-        console.log(progress);
+        console.log('文件下载进度：',progress);
     }
     isUpdateNow(){
         ipcRenderer.send('isUpdateNow')

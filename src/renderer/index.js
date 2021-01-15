@@ -20,17 +20,20 @@ import {
 Vue.component('Button', Button);
 Vue.component('Table', Table);
 
+// 触发主进程的自定义事件
 Vue.prototype.$ev = event;
 
+// 注册事件
+new RegEvent();
+
 // 定义环境变量
-window.env = {
+Vue.prototype.$env = {
 	NODE_ENV,	// node环境
 	MODE,		// 所处环境
 	VERSION, 	// 当前版本
 };
 
-// 注册事件
-new RegEvent();
+
 
 let app = new Vue({
 	store,

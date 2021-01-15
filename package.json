@@ -1,5 +1,5 @@
 {
-    "name": "electron-vue-template",
+    "name": "electron-vue",
     "version": "1.0.1",
     "description": "template",
     "main": "./app/main.js",
@@ -65,12 +65,12 @@
     "publish": [
         {
             "provider": "generic",
-            "url": "http://localhost:9090"
+            "url": "http://localhost"
         }
     ],
     "build": {
         "asar": true,
-        "productName": "Electron+vue",
+        "productName": "electron-vue",
         "appId": "com.electron.template",
         "copyright": "Copyright © year motou",
         "directories": {
@@ -90,6 +90,10 @@
             "title": "${productName}",
             "artifactName": "${productName}.${ext}"
         },
+        "signingHashAlgorithms": [
+            "sha256",
+            "sha1"
+        ],
         "win": {
             "legalTrademarks": "Copyright © year motou",
             "publisherName": "electron",
@@ -98,7 +102,8 @@
                 {
                     "target": "nsis",
                     "arch": [
-                        "x64"
+                        "x64",
+                        "ia32"
                     ]
                 }
             ],
@@ -110,7 +115,7 @@
             "allowToChangeInstallationDirectory": true,
             "perMachine": true,
             "allowElevation": true,
-            "artifactName": "${productName}-V${version}.${ext}",
+            "artifactName": "${productName}.${ext}",
             "runAfterFinish": true,
             "shortcutName": "木头人"
         }

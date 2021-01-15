@@ -8,7 +8,8 @@
  */
 const { ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
-const uploadUrl = 'http://localhost:9090';
+// 软件更新下载地址
+const uploadUrl = 'http://localhost/app';
 
 function updateHandle(win){
 	let message = {
@@ -19,26 +20,34 @@ function updateHandle(win){
 	}
 
 	let versionInfo = '';
+	let timer = null;
+	// 设置更新地址
 	autoUpdater.setFeedURL(uploadUrl);
-
-	autoUpdater.on('error', function(){
+	
+	// 更新出错出
+	autoUpdater.on('error', function(err){
+		message.error.err = err;
 		sendUpdateMessage(message.error);
 	});
-
+	
+	// 检查更新
 	autoUpdater.on('checking-for-update', ()=>{
 		sendUpdateMessage(message.checking);
 	});
 
+	// 发现新版本
 	autoUpdater.on('updata-available', ()=>{
 		sendUpdateMessage(message.updateAva);
 	});
 
+	// 当前版本为最新版本
 	autoUpdater.on('update-not-available',()=>{
 		sendUpdateMessage(message.updateNotAva);
 	});
 
+	// 更新下载进度
 	autoUpdater.on('download-propress', (progress)=>{
-		win.webContents.send('downloadProgress', progress)
+		win.webContents.send('download-progress', progress)
 	});
 
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate)=>{
@@ -48,15 +57,22 @@ function updateHandle(win){
 			autoUpdater.quitAndInstall();
 		});
  
-		win.webContents.send('isUpdateNow');
+		// win.webContents.send('isUpdateNow');
 	});
 
-	ipcMain.on('checkForUpdate', ()=>{
+	// 应用程序启动后5s__执更新检查
+	// timer = setTimeout(()=>{
+	// 	autoUpdater.checkForUpdates();
+	// 	clearTimeout(timer);
+	// }, 5000);
+
+	ipcMain.on('check-update', ()=>{
+		console.log("手动执行自动更新检查");
 		autoUpdater.checkForUpdates();
 	})
 
 	function sendUpdateMessage(text){
-		win.webContents.send('message', text);
+		win.webContents.send('update-message', text);
 	}
 }
 
