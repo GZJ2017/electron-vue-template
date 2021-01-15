@@ -1,8 +1,17 @@
+/*
+ * @Author: your name
+ * @Date: 2020-10-21 22:30:09
+ * @LastEditTime: 2020-12-27 12:10:50
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \electron-vue-template\src\renderer\index.js
+ */
 import Vue from 'vue';
 import App from './App.vue';
 import store from './store';
 import router from './router';
 import event from './event';
+import RegEvent from './event/regevent';
 import 'view-design/dist/styles/iview.css';
 import { 
 	Button, 
@@ -11,7 +20,7 @@ import {
 Vue.component('Button', Button);
 Vue.component('Table', Table);
 
-Vue.prototype.$event = event;
+Vue.prototype.$ev = event;
 
 // 定义环境变量
 window.env = {
@@ -19,6 +28,9 @@ window.env = {
 	MODE,		// 所处环境
 	VERSION, 	// 当前版本
 };
+
+// 注册事件
+new RegEvent();
 
 let app = new Vue({
 	store,

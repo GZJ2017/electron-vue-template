@@ -1,4 +1,12 @@
-const { BrowserWindow, dialog } = require('electron');
+/*
+ * @Author: your name
+ * @Date: 2020-10-24 20:29:25
+ * @LastEditTime: 2020-12-27 09:41:11
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \electron-vue-template\src\main\createWindow\index.js
+ */
+const { BrowserWindow } = require('electron');
 
 module.exports = {
 	createMianWin(options = {}){
@@ -15,12 +23,22 @@ module.exports = {
 		}, options);
 		return new BrowserWindow(options);
 	},
-	createChildWin(options = {}){
+	createInitiateWin(options = {}){
 		options = Object.assign({
-			width: 500,
-			height: 500,
+			width: 600,
+			height: 600,
 			webPreferences: {
-				nodeIntegration: true//默认是false
+				nodeIntegration: true //默认是false
+			}
+		},options);
+		return new BrowserWindow(options);
+	},
+	createViewWin(options = {}){
+		options = Object.assign({
+			width: 600,
+			height: 600,
+			webPreferences: {
+				nodeIntegration: true //默认是false
 			}
 		},options);
 		return new BrowserWindow(options);

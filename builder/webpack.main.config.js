@@ -14,7 +14,6 @@ const isDevMode = process.env.NODE_ENV === 'development';
 const { params } = require('./common.config');
 
 const plugins = [
-	new webpack.NoEmitOnErrorsPlugin(),
 	new webpack.DefinePlugin({}),			// 定义变量
 ]
 

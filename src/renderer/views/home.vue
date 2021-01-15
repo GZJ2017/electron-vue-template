@@ -1,25 +1,25 @@
 <!--
  * @Author: your name
  * @Date: 2020-10-21 22:30:22
- * @LastEditTime: 2020-12-05 20:19:02
+ * @LastEditTime: 2021-01-12 20:46:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\renderer\views\home.vue
 -->
 <template>
 <div class="home">
-	<!-- <head-nav /> -->
-	<!-- <a href="https://www.github.com">GitHub</a> -->
-	<input type="text" @copy="copyHandle" @paste="pasteHandle">
-	<Button @click="openWin">打开新的子窗口</Button>
-	<Button @click="alert">弹窗按钮</Button>
+	<!-- <input type="text" @copy="copyHandle" @paste="pasteHandle"> -->
+	<Button @click="openInitiate">打开一个新的窗口A</Button>
+	<Button @click="openView">打开一个新的窗口B</Button>
 	<Button @click="notice">显示通知</Button>
+	<hr>
+	<Button @click="sendA">向A窗口发出消息</Button>
 </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import headNav from '@/components/head';
+import headNav from "@/components/head";
 export default {
 	name: 'home',
 	data(){
@@ -39,8 +39,18 @@ export default {
 		console.log(this.userInfo);
 	},
 	methods: {
-		openWin(){
-			this.$event.openChildWindow();
+		openInitiate(){
+			this.$ev.openInitiateWin();
+		},
+		openView(){
+			this.$ev.openViewWin();
+		},
+		sendA(){
+			let data = []
+			for(let i = 0; i< 100; i++){
+				data[i] = {code: i, msg: 'success'}
+			}
+			this.$ev.sendAmessage(data);
 		},
 		alert(){
 			console.log(window.env);

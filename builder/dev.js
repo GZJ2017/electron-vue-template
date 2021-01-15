@@ -29,7 +29,6 @@ function devRender(){
 			if(err) {
 				reject(err);
 			}else {
-				console.log('Listening at http://loaclhost:8090');
 				resolve();
 			}	
 		})
