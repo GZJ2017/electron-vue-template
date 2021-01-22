@@ -36,7 +36,7 @@ function updateHandle(win){
 	});
 
 	// 发现新版本
-	autoUpdater.on('updata-available', ()=>{
+	autoUpdater.on('update-available', ()=>{
 		sendUpdateMessage(message.updateAva);
 	});
 
@@ -51,9 +51,9 @@ function updateHandle(win){
 	});
 
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate)=>{
+		sendUpdateMessage("最新安装包下载完毕");
 		ipcMain.on('isUpdateNow', (e, arg) => {
 			console.log('开始更新');
-
 			autoUpdater.quitAndInstall();
 		});
  

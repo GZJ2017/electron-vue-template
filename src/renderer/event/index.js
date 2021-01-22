@@ -7,7 +7,7 @@
  * @FilePath: \electron-vue-template\src\renderer\event\index.js
  */
 import {ipcRenderer} from 'electron';
-// 在渲染线程触发 —— 主线程监听的事件函数
+// 在渲染线程触发 ———— 主线程监听的事件函数
 export default {
 	openInitiateWin(){
 		ipcRenderer.send("open-initiate-win")
@@ -18,5 +18,9 @@ export default {
 	// 手动检查应用更新
 	checkUpdate(){
 		ipcRenderer.send('check-update');
+	},
+	// 下载完毕安装最新版程序
+	installationProgram(){
+		ipcRenderer.send('isUpdateNow');
 	}
 }

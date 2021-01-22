@@ -13,8 +13,7 @@ class RegisterEvent {
     constructor(){
         this.regEvent({
             'update-message': this.messageEvent,
-            'download-progress': this.downloadProgress,
-            isUpdateNow: this.isUpdateNow,
+            'download-progress': this.downloadProgress
         });
     }
     regEvent(events){
@@ -24,13 +23,10 @@ class RegisterEvent {
     }
     // 检查跟新
     messageEvent(event, text){
-        console.log("检查跟新：", text);
+        console.log("检查更新：", text);
     }
     downloadProgress(event, progress){
         console.log('文件下载进度：',progress);
-    }
-    isUpdateNow(){
-        ipcRenderer.send('isUpdateNow')
     }
 }
 

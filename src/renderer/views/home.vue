@@ -14,7 +14,8 @@
 	<Button @click="notice">显示通知</Button>
 	<hr>
 	<Button @click="checkUpdate">点击按钮手动检查更新</Button>
-	<Button @click="alert">查看当前应用版本</Button>	
+	<Button @click="alert">查看当前应用版本</Button>
+	<Button @click="update">安装程序</Button>
 </div>
 </template>
 
@@ -51,7 +52,9 @@ export default {
 		},
 		alert(){
 			console.log(this.$env);
-			alert('hello electron');
+		},
+		update(){
+			this.$ev.installationProgram();
 		},
 		// 复制事件
 		copyHandle(e){

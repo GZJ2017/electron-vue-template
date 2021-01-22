@@ -1,6 +1,6 @@
 {
     "name": "electron-vue",
-    "version": "1.0.1",
+    "version": "3.7.7",
     "description": "template",
     "main": "./app/main.js",
     "scripts": {
@@ -19,7 +19,9 @@
     "sideEffects": [
         "*.css"
     ],
-    "keywords": [],
+    "keywords": [
+        "木头人"
+    ],
     "author": "",
     "license": "ISC",
     "devDependencies": {
@@ -50,17 +52,17 @@
         "webpack": "^5.2.0",
         "webpack-bundle-analyzer": "^4.3.0",
         "webpack-cli": "^4.1.0",
-        "webpack-dev-server": "^3.11.0"
+        "webpack-dev-server": "^3.11.0",
+        "electron-dev-webpack-plugin": "^1.0.5",
+        "core-js": "^2.6.11",
+        "ws": "^7.4.1"
     },
     "dependencies": {
         "axios": "^0.20.0",
-        "core-js": "^2.6.11",
-        "electron-dev-webpack-plugin": "^1.0.5",
         "view-design": "^4.4.0",
         "vue": "^2.6.12",
         "vue-router": "^3.4.7",
-        "vuex": "^3.5.1",
-        "ws": "^7.4.1"
+        "vuex": "^3.5.1"
     },
     "publish": [
         {
@@ -69,9 +71,9 @@
         }
     ],
     "build": {
-        "asar": true,
+        "asar": false,
         "productName": "electron-vue",
-        "appId": "com.electron.template",
+        "appId": "com.mutou.app",
         "copyright": "Copyright © year motou",
         "directories": {
             "output": "pack"
@@ -80,7 +82,7 @@
             "app/**"
         ],
         "mac": {
-            "identity": "com.electron.template",
+            "identity": "com.mutou.app",
             "target": [
                 "dmg"
             ],
@@ -90,20 +92,12 @@
             "title": "${productName}",
             "artifactName": "${productName}.${ext}"
         },
-        "signingHashAlgorithms": [
-            "sha256",
-            "sha1"
-        ],
         "win": {
-            "legalTrademarks": "Copyright © year motou",
-            "publisherName": "electron",
-            "requestedExecutionLevel": "highestAvailable",
             "target": [
                 {
                     "target": "nsis",
                     "arch": [
-                        "x64",
-                        "ia32"
+                        "x64"
                     ]
                 }
             ],
@@ -111,13 +105,16 @@
         },
         "nsis": {
             "oneClick": false,
-            "createDesktopShortcut": "always",
-            "allowToChangeInstallationDirectory": true,
             "perMachine": true,
-            "allowElevation": true,
-            "artifactName": "${productName}.${ext}",
             "runAfterFinish": true,
-            "shortcutName": "木头人"
+            "allowElevation": true,
+            "createDesktopShortcut": "always",
+            "createStartMenuShortcut": true,
+            "allowToChangeInstallationDirectory": true,
+            "deleteAppDataOnUninstall": true,
+            "artifactName": "${productName}.${ext}",
+            "shortcutName": "木头人",
+            "guid": "686308eb-9264-4d00-ba81-f17b3e261538"
         }
     }
 }
