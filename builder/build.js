@@ -55,7 +55,6 @@ const build = {
 	writeVersionConfig(){
 		fs.writeFileSync(path.join(__dirname, '../config/version.js'), `module.exports = ${JSON.stringify(this.setup, null, 4)}`);
 		packageJson.version = this.setup.version.slice(0,3).join('.');
-		// packageJson.build.nsis.guid = uuidv4();
 		fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson,null,4));
 	},
 	// 创建文件夹，如果文件夹已存在则什么都不做

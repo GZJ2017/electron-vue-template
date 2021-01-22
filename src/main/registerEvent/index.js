@@ -54,6 +54,7 @@ class addEvent {
 			})
 		})
 	}
+	// 更新应用
 	updateApp(){
 		updateHandle(this.win);
 	}

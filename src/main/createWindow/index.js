@@ -28,7 +28,7 @@ module.exports = {
 			width: 600,
 			height: 600,
 			webPreferences: {
-				nodeIntegration: true //默认是false
+				nodeIntegration: true // 默认是false
 			}
 		},options);
 		return new BrowserWindow(options);
@@ -38,7 +38,7 @@ module.exports = {
 			width: 600,
 			height: 600,
 			webPreferences: {
-				nodeIntegration: true //默认是false
+				nodeIntegration: true // 默认是false
 			}
 		},options);
 		return new BrowserWindow(options);
