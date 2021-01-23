@@ -1,6 +1,7 @@
 process.env.NODE_ENV = 'development';
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
+const { proxy } = require('./common.config');
 
 // 编译主线程
 function buildMain(){
@@ -25,6 +26,7 @@ function devRender(){
 			contentBase: webpackDevConfig.output.path,
 			publicPath: webpackDevConfig.output.publicPath,
 			hot: true,				// 开启热加载
+			proxy,
 		}).listen(8090, 'localhost', err => {
 			if(err) {
 				reject(err);

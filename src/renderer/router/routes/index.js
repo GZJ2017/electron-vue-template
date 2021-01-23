@@ -1,6 +1,6 @@
 
-import Home from '@/views/home.vue';
-import Login from '@/views/login.vue';
+import Home from '@/views/Home.vue';
+import Login from '@/views/Login.vue';
 
 export default [{
 	path: '/',
