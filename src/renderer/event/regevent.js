@@ -10,7 +10,7 @@
 import {ipcRenderer} from 'electron';
 // 在渲染进程监听 --- 主线程触发的事件
 class RegisterEvent {
-    constructor(){
+    init(){
         this.regEvent({
             'update-message': this.messageEvent,
             'download-progress': this.downloadProgress
@@ -30,4 +30,4 @@ class RegisterEvent {
     }
 }
 
-export default RegisterEvent;
+export default new RegisterEvent;
