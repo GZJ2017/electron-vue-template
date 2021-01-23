@@ -1,9 +1,13 @@
 // 注册快捷键
 const {app, globalShortcut} = require('electron');
-
+const { getWin } = require('../utils');
 class Shortcut {
-	constructor(win){
-		this.openTools(win);
+	constructor(){
+		this.win = null; // 主窗口
+	}
+	init(){
+		this.win = getWin('mainWin');
+		this.openTools(this.win);
 	}
 	register(key, cb){
 		globalShortcut.register(key, cb);
@@ -23,4 +27,4 @@ app.on('will-quit', ()=>{
 	globalShortcut.unregisterAll();
 })
 
-module.exports = Shortcut;
+module.exports = new Shortcut();

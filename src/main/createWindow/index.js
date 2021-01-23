@@ -3,7 +3,7 @@
  * @Date: 2020-10-24 20:29:25
  * @LastEditTime: 2020-12-27 09:41:11
  * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
+ * @Description: 创建窗口
  * @FilePath: \electron-vue-template\src\main\createWindow\index.js
  */
 const { BrowserWindow } = require('electron');
@@ -11,6 +11,7 @@ const { BrowserWindow } = require('electron');
 module.exports = {
 	createMianWin(options = {}){
 		options = Object.assign({
+			title: 'mainWin',
 			width: 1200,	// 窗口宽度
 			height: 800,	// 窗口高度
 			// autoHideMenuBar:true,
@@ -25,6 +26,7 @@ module.exports = {
 	},
 	createInitiateWin(options = {}){
 		options = Object.assign({
+			title: 'initiateWin',
 			width: 600,
 			height: 600,
 			webPreferences: {
@@ -35,6 +37,7 @@ module.exports = {
 	},
 	createViewWin(options = {}){
 		options = Object.assign({
+			title: 'viewWin',
 			width: 600,
 			height: 600,
 			webPreferences: {

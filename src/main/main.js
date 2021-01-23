@@ -8,12 +8,12 @@
  */
 const url = require("url");
 const path = require("path");
-const Shortcut = require('./shortcut');
+const shortcut = require('./shortcut');
 const electron = require('electron');
 const { createMianWin } = require('./createWindow');
-const RegisterEvent = require('./registerEvent');
-const CreateSocket = require('./socket');
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+const registerEvent = require('./registerEvent');
+const createSocket = require('./socket');
+const plugins = require('./plugins');
 
 class App {
 	constructor({app, BrowserWindow, session}){
@@ -61,16 +61,11 @@ class App {
 		if(process.platform !== 'darwin') this.app.quit();
 	}
 	ready(){
-		this.addDevtools();
+		plugins.installPlugin();		// 安装插件
 		this.createWindow(); 			// 创建主窗口
-		new CreateSocket().init();		// 创建socket
-		new Shortcut(this.win);			// 设置快捷键
-		new RegisterEvent(this.win);	// 注册事件
-	}
-	addDevtools(){
-		installExtension(VUEJS_DEVTOOLS)
-        .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log('An error occurred: ', err));
+		createSocket.init();		// 创建socket
+		shortcut.init();			// 设置快捷键
+		registerEvent.init();	// 注册事件
 	}
 	closed(){
 		this.win = null;

@@ -71,5 +71,5 @@ class CreateSocket{
     }
 }
 
-module.exports = CreateSocket;
+module.exports = new CreateSocket;
 

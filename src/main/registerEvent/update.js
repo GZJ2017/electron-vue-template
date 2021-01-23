@@ -3,7 +3,7 @@
  * @Date: 2020-11-28 16:37:48
  * @LastEditTime: 2020-12-27 11:52:30
  * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
+ * @Description: 检查应用程序更新
  * @FilePath: \electron-vue-template\src\main\registerEvent\update.js
  */
 const { ipcMain } = require('electron');

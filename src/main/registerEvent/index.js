@@ -6,20 +6,24 @@
  * @Description: In User Settings Edit
  * @FilePath: \electron-vue-template\src\main\registerEvent\index.js
  */
-const { ipcMain } = require('electron');
+const { app, ipcMain } = require('electron');
 const { createInitiateWin, createViewWin } = require('../createWindow');
 const path = require('path');
 const url = require('url');
 const updateHandle = require('./update');
+const { getWin } = require('../utils');
 
-class addEvent {
-	constructor(win){
-		this.win = win;
+class RegisterEvent {
+	constructor(){
+		this.win = null; 		// 主窗口
+		this.initiate = null;
+		this.view = null;
+	}
+	init(){
+		this.win = getWin('mainWin');
 		this.openInitiateWin();
 		this.openViewWin();
 		this.updateApp();
-		this.initiate = null;
-		this.view = null;
 	}
 	getPath(file){
 		let url = process.env.NODE_ENV === 'development'
@@ -60,4 +64,8 @@ class addEvent {
 	}
 }
 
-module.exports = addEvent;
+// 当应用程序退出时取消所有监听事件
+app.on('will-quit', ()=>{
+	ipcMain.removeAllListeners();
+})
+module.exports = new RegisterEvent;
