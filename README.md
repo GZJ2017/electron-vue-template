@@ -8,7 +8,8 @@
 3. `npm run dev` 开发
 4. `npm run build` 生产打包
 
-
+> 打包应用程序时需要下载 electron-v11.2.0-win32-x64.zip 文件，下载速度很慢，下载失败。
+> 如果时window系统，可以将 /doc/electron-v11.2.0-win32-x64.zip 已经下载好的文件直接复制到 `C:\Users\liting\AppData\Local\electron\Cache`文件夹下, 注：第二个目录时对应用户的目录，每个人的可能不一样
 
 
 ### 功能
@@ -53,10 +54,3 @@ node: 配置参考：
 
 https://www.cnblogs.com/kakayang/p/11766273.html
 
-
-## main
-
-https://blog.csdn.net/Cceking/article/details/80297249?ops_request_misc=%25257B%252522request%25255Fid%252522%25253A%252522160715463019195283074361%252522%25252C%252522scm%252522%25253A%25252220140713.130102334.pc%25255Fall.%252522%25257D&request_id=160715463019195283074361&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_v2~rank_v29-18-80297249.first_rank_v2_pc_rank_v29&utm_term=nodejs%20webrtc%E6%8E%A8%E6%B5%81
-
-
-https://blog.csdn.net/vikanill/article/details/99213067?ops_request_misc=&request_id=&biz_id=102&utm_term=webRTC%2520MediaRecorder%2520%25E5%25BD%2595%25E5%2588%25B6%25E7%259A%2584%25E8%25A7%2586%25E9%25A2%2591%25E6%2580%258E%25E4%25B9%2588%25E5%25AE%259E%25E7%258E%25B0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-3-99213067.first_rank_v2_pc_rank_v29

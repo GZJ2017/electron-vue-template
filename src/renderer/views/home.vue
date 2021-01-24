@@ -14,12 +14,17 @@
 	<Button @click="notice">显示通知</Button>
 	<hr>
 	<Button @click="checkUpdate">点击按钮手动检查更新</Button>
-	<Button @click="alert">查看当前应用版本</Button>	
+	<Button @click="alert">查看当前应用版本</Button>
+	<Button @click="update">安装程序</Button>
+
+	<hr>
+	<Button @click="sendGet">发送get请求</Button>
 </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
 import headNav from "@/components/head";
 export default {
 	name: 'home',
@@ -40,6 +45,18 @@ export default {
 		console.log(this.userInfo);
 	},
 	methods: {
+		sendGet(){
+			console.log('get send');
+
+			axios.get('/api/user?ID=12345')
+			.then(function (response) {
+			    console.log(response);
+			})
+			.catch(function (error) {
+			    console.log(error);
+			});
+
+		},
 		checkUpdate(){
 			this.$ev.checkUpdate();
 		},
@@ -51,7 +68,9 @@ export default {
 		},
 		alert(){
 			console.log(this.$env);
-			alert('hello electron');
+		},
+		update(){
+			this.$ev.installationProgram();
 		},
 		// 复制事件
 		copyHandle(e){

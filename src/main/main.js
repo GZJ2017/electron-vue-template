@@ -3,16 +3,17 @@
  * @Date: 2020-10-21 22:08:16
  * @LastEditTime: 2020-12-27 11:50:28
  * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
+ * @Description: 主线程入口文件
  * @FilePath: \electron-vue-template\src\main\main.js
  */
 const url = require("url");
 const path = require("path");
-const Shortcut = require('./shortcut');
+const shortcut = require('./shortcut');
 const electron = require('electron');
 const { createMianWin } = require('./createWindow');
-const RegisterEvent = require('./registerEvent');
-const CreateSocket = require('./socket');
+const registerEvent = require('./registerEvent');
+const createSocket = require('./socket');
+const plugins = require('./plugins');
 
 class App {
 	constructor({app, BrowserWindow}){
@@ -23,6 +24,10 @@ class App {
 		this.runCheck();
 		this.eventHandle(app);
 	}
+	/**
+	 * 当运行第二个应用时，直接聚焦到第一个已经存在的实例上
+	 * @return {[type]} [description]
+	 */
 	runCheck(){
 		const gotTheLock = this.app.requestSingleInstanceLock();
 		if(!gotTheLock) return this.app.quit();
@@ -36,6 +41,7 @@ class App {
 			});
 		})
 	}
+	// 创建主窗口
 	createWindow(){
 		this.win = createMianWin();
 		this.mode === 'production';
@@ -46,6 +52,7 @@ class App {
 		// 等待渲染进程页面加载完毕再显示窗口
 		this.win.once('ready-to-show', () => this.win.show())
 	}
+	// 添加应用监听事件
 	eventHandle(app){
 		app.on('closed', () => this.closed());
 		app.on('ready', () => this.ready());
@@ -59,10 +66,11 @@ class App {
 		if(process.platform !== 'darwin') this.app.quit();
 	}
 	ready(){
-		this.createWindow(); 				// 创建主窗口
-		new CreateSocket().init();		// 创建socket
-		new Shortcut(this.win);			// 设置快捷键
-		new RegisterEvent(this.win);;	// 注册事件
+		plugins.installPlugin();		// 安装插件
+		this.createWindow(); 			// 创建主窗口
+		createSocket.init();		// 创建socket
+		shortcut.init();			// 设置快捷键
+		registerEvent.init();	// 注册事件
 	}
 	closed(){
 		this.win = null;

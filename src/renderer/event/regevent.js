@@ -10,11 +10,10 @@
 import {ipcRenderer} from 'electron';
 // 在渲染进程监听 --- 主线程触发的事件
 class RegisterEvent {
-    constructor(){
+    init(){
         this.regEvent({
             'update-message': this.messageEvent,
-            'download-progress': this.downloadProgress,
-            isUpdateNow: this.isUpdateNow,
+            'download-progress': this.downloadProgress
         });
     }
     regEvent(events){
@@ -24,14 +23,11 @@ class RegisterEvent {
     }
     // 检查跟新
     messageEvent(event, text){
-        console.log("检查跟新：", text);
+        console.log("检查更新：", text);
     }
     downloadProgress(event, progress){
         console.log('文件下载进度：',progress);
     }
-    isUpdateNow(){
-        ipcRenderer.send('isUpdateNow')
-    }
 }
 
-export default RegisterEvent;
+export default new RegisterEvent;

@@ -3,7 +3,7 @@
  * @Date: 2020-11-28 16:37:48
  * @LastEditTime: 2020-12-27 11:52:30
  * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
+ * @Description: 检查应用程序更新
  * @FilePath: \electron-vue-template\src\main\registerEvent\update.js
  */
 const { ipcMain } = require('electron');
@@ -36,7 +36,7 @@ function updateHandle(win){
 	});
 
 	// 发现新版本
-	autoUpdater.on('updata-available', ()=>{
+	autoUpdater.on('update-available', ()=>{
 		sendUpdateMessage(message.updateAva);
 	});
 
@@ -51,9 +51,9 @@ function updateHandle(win){
 	});
 
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate)=>{
+		sendUpdateMessage("最新安装包下载完毕");
 		ipcMain.on('isUpdateNow', (e, arg) => {
 			console.log('开始更新');
-
 			autoUpdater.quitAndInstall();
 		});
  

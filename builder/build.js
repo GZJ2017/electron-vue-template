@@ -10,6 +10,7 @@ const renderConfig = require("./webpack.render.config.js");
 const mainRenderConfig = require('./webpack.main.config');
 const electronBuilder = require('electron-builder');
 const packageJson = require('../package.json');
+const {v4: uuidv4} = require('uuid');
 const archiver = require('archiver');
 // 设置 app 一些选项
 // 打包渲染进程
