@@ -25,6 +25,7 @@ function devRender(){
 	    new WebpackDevServer(compiler, {
 			contentBase: webpackDevConfig.output.path,
 			publicPath: webpackDevConfig.output.publicPath,
+			compress: true,
 			hot: true,				// 开启热加载
 			proxy,
 		}).listen(8090, 'localhost', err => {
@@ -32,7 +33,7 @@ function devRender(){
 				reject(err);
 			}else {
 				resolve();
-			}	
+			}
 		})
 	})
 }

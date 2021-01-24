@@ -13,7 +13,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 module.exports = {
 	mode: isDevMode ? 'development': 'production',
 	entry: {
-		rebderer: path.join(__dirname, '../src/renderer/index.js')
+		renderer: path.join(__dirname, '../src/renderer/index.js')
 	},
 	output: {
 		path: path.join(__dirname, '../app/'),
@@ -29,8 +29,8 @@ module.exports = {
 			test: /\.s[ac]ss$/,
 			use: [
 				...(
-					isDevMode 
-					? ['vue-style-loader', 'style-loader'] 
+					isDevMode
+					? ['vue-style-loader', 'style-loader']
 					: [MiniCssExtractPlugin.loader]
 				),
 				'css-loader',
@@ -47,8 +47,8 @@ module.exports = {
 			test: /\.css(\?.*)?$/,
 			use: [
 				...(
-					isDevMode 
-					? ['vue-style-loader', 'style-loader'] 
+					isDevMode
+					? ['vue-style-loader', 'style-loader']
 					: [MiniCssExtractPlugin.loader]
 				),
 				'css-loader'

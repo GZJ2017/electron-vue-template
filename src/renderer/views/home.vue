@@ -8,7 +8,8 @@
 -->
 <template>
 <div class="home">
-	<!-- <input type="text" @copy="copyHandle" @paste="pasteHandle"> -->
+ <head-nav></head-nav>
+<!--  <input type="text" @copy="copyHandle" @paste="pasteHandle">-->
 	<Button @click="openInitiate">打开一个新的窗口-窗口链接地址是服务器</Button>
 	<Button @click="openView">打开一个新的窗口-窗口地址是本地文件</Button>
 	<Button @click="notice">显示通知</Button>

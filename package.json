@@ -95,6 +95,7 @@
             "artifactName": "${productName}.${ext}"
         },
         "win": {
+            "icon": "./icon.jpg",
             "target": [
                 {
                     "target": "nsis",
