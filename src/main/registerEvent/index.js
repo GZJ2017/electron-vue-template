@@ -17,7 +17,6 @@ class addEvent {
 		this.win = win;
 		this.openInitiateWin();
 		this.openViewWin();
-		this.sendAmessage();
 		this.updateApp();
 		this.initiate = null;
 		this.view = null;
@@ -35,7 +34,6 @@ class addEvent {
 			this.initiate = createInitiateWin();
 			let filePath = url.pathToFileURL(this.getPath('initiate.html')).href;
 			this.initiate.loadURL(filePath);
-			// this.initiate.loadFile(this.getPath('initiate.html'));
 			this.initiate.on('closed',()=>{
 				this.initiate = null;
 				console.log('initiate is closed');
@@ -55,12 +53,6 @@ class addEvent {
 				console.log('view is closed');
 			})
 		})
-	}
-	sendAmessage(){
-		ipcMain.on('a-message', (ev, data) => {
-			this.initiate.webContents.send('a-render-message', data);
-			console.log(data);
-		});
 	}
 	updateApp(){
 		updateHandle(this.win);

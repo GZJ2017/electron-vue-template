@@ -25,7 +25,7 @@ function devRender(){
 			contentBase: webpackDevConfig.output.path,
 			publicPath: webpackDevConfig.output.publicPath,
 			hot: true,				// 开启热加载
-		}).listen(8090, err => {
+		}).listen(8090, 'localhost', err => {
 			if(err) {
 				reject(err);
 			}else {

@@ -20,7 +20,6 @@ const plugins = [
 if(isDevMode) {
 	plugins.push(new ElectronDevWebpackPlugin())	// 开发热加载electron应用)
 }
-
 module.exports = {
 	mode: process.env.NODE_ENV,
 	entry:{

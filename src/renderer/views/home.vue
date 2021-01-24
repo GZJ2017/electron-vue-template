@@ -13,7 +13,8 @@
 	<Button @click="openView">打开一个新的窗口-窗口地址是本地文件</Button>
 	<Button @click="notice">显示通知</Button>
 	<hr>
-	<Button @click="sendA">向A窗口发出消息</Button>
+	<Button @click="checkUpdate">点击按钮手动检查更新</Button>
+	<Button @click="alert">查看当前应用版本</Button>	
 </div>
 </template>
 
@@ -39,17 +40,17 @@ export default {
 		console.log(this.userInfo);
 	},
 	methods: {
+		checkUpdate(){
+			this.$ev.checkUpdate();
+		},
 		openInitiate(){
 			this.$ev.openInitiateWin();
 		},
 		openView(){
 			this.$ev.openViewWin();
 		},
-		sendA(){
-			this.$ev.sendAmessage({code: '2001'})
-		},
 		alert(){
-			console.log(window.env);
+			console.log(this.$env);
 			alert('hello electron');
 		},
 		// 复制事件
